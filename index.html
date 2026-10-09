@@ -321,7 +321,7 @@ html.framed .wrap { padding-block-end: 32px; }
           </div>
           <div class="field" data-f="initials"><label class="lbl" for="initials">Voorletters</label><input class="input" id="initials" autocomplete="off" placeholder="J.A."><span class="err"></span></div>
           <div class="field" data-f="lastName"><label class="lbl" for="lastName">Achternaam <span class="opt">(met tussenvoegsel)</span></label><input class="input" id="lastName" autocomplete="family-name"><span class="err"></span></div>
-          <div class="field" data-f="birthDate"><label class="lbl" for="birthDate">Geboortedatum</label><input class="input num" id="birthDate" inputmode="numeric" autocomplete="bday" placeholder="dd-mm-jjjj"><span class="err"></span></div>
+          <div class="field" data-f="birthDate"><label class="lbl" for="birthDate">Geboortedatum</label><input class="input num" id="birthDate" inputmode="numeric" autocomplete="bday" placeholder="dd-mm-jjjj" maxlength="10"><span class="err"></span></div>
           <div class="field" data-f="phone"><label class="lbl" for="phone">Telefoonnummer</label><input class="input" id="phone" type="tel" autocomplete="tel"><span class="err"></span></div>
           <div class="field full" data-f="email"><label class="lbl" for="email">E-mailadres</label><input class="input" id="email" type="email" autocomplete="email"><span class="err"></span></div>
           <div class="field full" data-f="street"><label class="lbl" for="street">Straat</label><input class="input" id="street" autocomplete="address-line1"><span class="err"></span></div>
@@ -985,6 +985,15 @@ document.addEventListener('click', (e) => {
   if (!target) return;
   e.preventDefault();
   scrollToEl(target);
+});
+
+/* Geboortedatum: alleen cijfers typen, de streepjes komen er vanzelf tussen (dd-mm-jjjj).
+   Een streepje komt pas als er een cijfer achter staat, zodat terug-wissen gewoon werkt. */
+$('birthDate').addEventListener('input', (e) => {
+  const el = e.target;
+  const digits = el.value.replace(/\D/g, '').slice(0, 8);
+  const parts = [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4)].filter(Boolean);
+  el.value = parts.join('-');
 });
 
 radioKeys($('models')); radioKeys($('versions')); radioKeys($('colors')); radioKeys($('terms')); radioKeys($('via'));

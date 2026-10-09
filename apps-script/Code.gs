@@ -2,7 +2,7 @@
  * Ontvangt bakfiets-leaseaanvragen van het formulier en zet ze in deze Google Sheet.
  * Stuurt de klant een bevestiging via MailerSend en het team een melding (zonder IBAN).
  *
- * Instellingen staan in Projectinstellingen → Scripteigenschappen (zie README.md):
+ * Instellingen staan in Projectinstellingen -> Scripteigenschappen (zie README.md):
  *   NOTIFY_EMAIL           e-mailadres(sen) voor de melding, komma-gescheiden
  *   MAILERSEND_API_TOKEN   API-token van MailerSend (leeg = geen bevestiging naar de klant)
  *   MAIL_FROM              afzender, op een domein dat in MailerSend is geverifieerd (bijv. noreply@fietsleaseholland.nl)
@@ -12,7 +12,7 @@
 
 var SHEET_NAME = 'Aanvragen';
 var COLUMNS = [
-  'Ontvangen', 'Referentie', 'Status', 'Bron', 'Privé/zakelijk',
+  'Ontvangen', 'Referentie', 'Status', 'Bron', 'Priv\u00e9/zakelijk',
   'Voorletters', 'Achternaam', 'Geboortedatum', 'E-mail', 'Telefoon',
   'Straat', 'Huisnummer', 'Toevoeging', 'Postcode', 'Plaats',
   'Bedrijfsnaam', 'KVK-nummer', 'Btw-nummer', 'Tekeningsbevoegde', 'IBAN',
@@ -74,7 +74,7 @@ function handle(d) {
     reference = newReference();
     var sheet = getSheet();
     var row = [
-      new Date(), reference, 'Nieuw', d.partner || '', c.leaseVia === 'zakelijk' ? 'Zakelijk' : 'Privé',
+      new Date(), reference, 'Nieuw', d.partner || '', c.leaseVia === 'zakelijk' ? 'Zakelijk' : 'Priv\u00e9',
       c.initials, c.lastName, c.birthDate, c.email, c.phone,
       c.street, c.houseNumber, c.addition, c.postalCode, c.city,
       b ? b.company : '', b ? b.kvk : '', b ? b.vatNumber : '', b ? b.signatory : '', b ? b.iban : '',
@@ -134,7 +134,7 @@ function newReference() {
 
 function eur(n) {
   if (n === null || n === undefined || n === '') return 'op aanvraag';
-  return '€ ' + Number(n).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return '\u20ac ' + Number(n).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 function esc(s) {
@@ -143,8 +143,8 @@ function esc(s) {
 
 function bikeLine(d) {
   var bike = d.bike || {};
-  var version = bike.version === 'dog' ? 'Dog · ' : (bike.model === 'vanrixtel' ? 'Family · ' : '');
-  return bike.name + ' · ' + version + bike.colorName + ' · ' + d.termMonths + ' maanden';
+  var version = bike.version === 'dog' ? 'Dog \u00b7 ' : (bike.model === 'vanrixtel' ? 'Family \u00b7 ' : '');
+  return bike.name + ' \u00b7 ' + version + bike.colorName + ' \u00b7 ' + d.termMonths + ' maanden';
 }
 
 function sendConfirmation(reference, d) {
@@ -161,7 +161,7 @@ function sendConfirmation(reference, d) {
     '<table style="border-collapse:collapse;margin:16px 0;font-size:14px">' +
     row('Referentie', reference) +
     row('Bakfiets', bikeLine(d)) +
-    row('Extra’s', extras) +
+    row('Extra\u2019s', extras) +
     row('Leaseprijs', eur(d.monthlyInclVat) + ' per maand, incl. btw') +
     '</table>' +
     '<p><b>Zo gaat het verder</b></p>' +
@@ -173,7 +173,7 @@ function sendConfirmation(reference, d) {
     '<p>Je aanvraag is gratis en vrijblijvend. Heb je een vraag? Beantwoord deze e-mail en vermeld je referentie.</p>' +
     '<p>Met vriendelijke groet,<br>Fietslease Holland</p></div>';
   var text = 'Beste ' + c.initials + ' ' + c.lastName + ',\n\nBedankt voor je aanvraag. Referentie: ' + reference +
-    '\nBakfiets: ' + bikeLine(d) + '\nExtra’s: ' + extras + '\nLeaseprijs: ' + eur(d.monthlyInclVat) + ' per maand, incl. btw' +
+    '\nBakfiets: ' + bikeLine(d) + '\nExtra\u2019s: ' + extras + '\nLeaseprijs: ' + eur(d.monthlyInclVat) + ' per maand, incl. btw' +
     '\n\nBinnen 48 uur is alles geregeld. Je ontvangt het leasecontract; pas als je het digitaal tekent, is het definitief.' +
     '\n\nMet vriendelijke groet,\nFietslease Holland';
   var body = {
@@ -207,14 +207,14 @@ function sendNotification(reference, d) {
   var url = SpreadsheetApp.getActiveSpreadsheet().getUrl();
   MailApp.sendEmail({
     to: to,
-    subject: 'Nieuwe bakfiets-leaseaanvraag ' + reference + ' (' + (c.leaseVia === 'zakelijk' ? 'zakelijk' : 'privé') + ')',
+    subject: 'Nieuwe bakfiets-leaseaanvraag ' + reference + ' (' + (c.leaseVia === 'zakelijk' ? 'zakelijk' : 'priv\u00e9') + ')',
     htmlBody:
       '<p>Er is een nieuwe aanvraag binnengekomen via ' + esc(d.partner || 'het formulier') + '.</p>' +
       '<table style="border-collapse:collapse;font-size:14px">' +
       row('Referentie', reference) +
       row('Naam', c.initials + ' ' + c.lastName + (d.business ? ' (' + d.business.company + ')' : '')) +
       row('Bakfiets', bikeLine(d)) +
-      row('Extra’s', optionNames(d) || 'geen') +
+      row('Extra\u2019s', optionNames(d) || 'geen') +
       row('Leaseprijs', eur(d.monthlyInclVat) + ' p/m') +
       '</table>' +
       '<p><a href="' + url + '">Open de sheet</a> voor alle gegevens.</p>',
