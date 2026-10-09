@@ -4,6 +4,7 @@ Losse pagina waarmee klanten van Fietsoptimaal een bakfiets samenstellen en vrij
 
 - `index.html` – het formulier (alles in één bestand, geen build nodig)
 - `img/` – productfoto's (van Fietsoptimaal, met toestemming)
+- `fonts/` – Inter en Poppins (open licentie, SIL OFL), zelf gehost zodat bezoekers geen verzoeken naar Google Fonts doen
 - `embed.js` – klein script voor de partnerpagina: iframe groeit mee en scrollen werkt goed
 - `iframe-test.html` – testpagina die het formulier als iframe toont, met knoppen voor verschillende breedtes
 
