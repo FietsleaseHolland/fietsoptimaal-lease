@@ -4,7 +4,8 @@ Losse pagina waarmee klanten van Fietsoptimaal een bakfiets samenstellen en vrij
 
 - `index.html` – het formulier (alles in één bestand, geen build nodig)
 - `img/` – productfoto's (van Fietsoptimaal, met toestemming)
-- `iframe-test.html` – testpagina die het formulier als iframe toont, met knoppen voor desktop-, tablet- en telefoonbreedte
+- `embed.js` – klein script voor de partnerpagina: iframe groeit mee en scrollen werkt goed
+- `iframe-test.html` – testpagina die het formulier als iframe toont, met knoppen voor verschillende breedtes
 
 ## Lokaal bekijken
 
@@ -22,25 +23,28 @@ Alles staat bovenin het script in `index.html`:
 - `PLUS_ITEMS` – inhoud van het pluspakket (winkelwaarde incl. btw).
 - `STAFFEL` – de E-Bike-staffel uit "250506 staffellijst FLH.xlsx": totaalprijs incl. btw wordt afgerond naar de eerstvolgende staffel. De regel van € 5.449 (36 mnd stond op € 210) is op `null` gezet en valt terug op de volgende staffel.
 
-## Embedcode voor de partner
+## Inbouwen op de site van de partner
 
-Vervang `https://lease.fietsleaseholland.nl/` door de echte URL.
+Plak dit op de pagina waar het formulier moet komen. In WordPress: blok **Aangepaste HTML**; in Elementor: widget **HTML**.
 
 ```html
-<iframe id="flh-bakfiets-lease" src="https://lease.fietsleaseholland.nl/" title="Bakfiets lease aanvragen" style="display:block;width:100%;height:2400px;border:0" loading="lazy"></iframe>
-<script>
-  (function () {
-    var frame = document.getElementById('flh-bakfiets-lease');
-    var origin = new URL(frame.src, location.href).origin;
-    window.addEventListener('message', function (e) {
-      if (e.origin !== origin || !e.data || e.data.type !== 'lease-form:height') return;
-      frame.style.height = e.data.height + 'px';
-    });
-  })();
-</script>
+<iframe data-fietslease-bakfiets src="https://fietsleaseholland.github.io/fietsoptimaal-lease/" title="Bakfiets lease aanvragen" style="display:block;width:100%;height:85vh;min-height:640px;border:0" loading="lazy"></iframe>
+<script src="https://fietsleaseholland.github.io/fietsoptimaal-lease/embed.js" async></script>
 ```
 
-Het formulier stuurt zijn hoogte naar de partnerpagina, zodat het iframe meegroeit en er geen tweede scrollbalk komt.
+(Na livegang worden beide URL's het subdomein van Fietslease Holland.)
+
+**Wat de partner moet weten**
+
+- Zet het in een vak van **volledige breedte** van de inhoud, zonder vaste hoogte of extra binnenmarge. Het formulier past zich zelf aan: twee kolommen vanaf 960 px breed, één kolom daaronder, telefoonweergave tot 320 px.
+- Heeft de site een **vaste menubalk** bovenin? Zet dan de hoogte ervan op het iframe, bijvoorbeeld `data-offset="90"`. Dan valt een stap of foutmelding niet onder de menubalk als het formulier ernaartoe scrollt.
+- De pagina van de partner heeft al een viewport-meta (`<meta name="viewport" content="width=device-width, initial-scale=1">`); dat is bij vrijwel elke site al zo.
+
+**Hoe het werkt**
+
+- *Met* `embed.js`: het iframe groeit mee met de inhoud, er is geen tweede scrollbalk, en scrollen binnen het formulier (naar een stap, foutmelding of het bedankscherm) scrollt de partnerpagina mee.
+- *Zonder* `embed.js` (bijvoorbeeld als een CMS scripts weghaalt): het iframe blijft 85% van de schermhoogte en scrollt zelf. Alles blijft werken: de samenvatting blijft staan en op telefoon is er een balk met de maandprijs onderin.
+- Testen kan op `iframe-test.html` met knoppen voor desktop, laptop, tablet, telefoon en 320 px. Met `?zonder-script` zie je de tweede situatie.
 
 ## Nog te doen
 
