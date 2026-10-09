@@ -199,26 +199,74 @@ function row(label, value) {
   return '<tr><td style="padding:4px 16px 4px 0;color:#5f635e;vertical-align:top">' + esc(label) + '</td><td style="padding:4px 0">' + esc(value) + '</td></tr>';
 }
 
-/** Melding aan het team. Bewust zonder IBAN, geboortedatum en adres: die staan alleen in de sheet. */
+/** Melding aan het team (sales). Bewust zonder IBAN, geboortedatum en adres: die staan alleen in de sheet. */
 function sendNotification(reference, d) {
   var to = PropertiesService.getScriptProperties().getProperty('NOTIFY_EMAIL');
   if (!to) return;
   var c = d.customer;
-  var url = SpreadsheetApp.getActiveSpreadsheet().getUrl();
+  var zakelijk = c.leaseVia === 'zakelijk';
   MailApp.sendEmail({
     to: to,
-    subject: 'Nieuwe bakfiets-leaseaanvraag ' + reference + ' (' + (c.leaseVia === 'zakelijk' ? 'zakelijk' : 'priv\u00e9') + ')',
-    htmlBody:
-      '<p>Er is een nieuwe aanvraag binnengekomen via ' + esc(d.partner || 'het formulier') + '.</p>' +
-      '<table style="border-collapse:collapse;font-size:14px">' +
-      row('Referentie', reference) +
-      row('Naam', c.initials + ' ' + c.lastName + (d.business ? ' (' + d.business.company + ')' : '')) +
-      row('Bakfiets', bikeLine(d)) +
-      row('Extra\u2019s', optionNames(d) || 'geen') +
-      row('Leaseprijs', eur(d.monthlyInclVat) + ' p/m') +
-      '</table>' +
-      '<p><a href="' + url + '">Open de sheet</a> voor alle gegevens.</p>',
+    name: 'Bakfiets leaseformulier',
+    subject: 'Nieuwe aanvraag ' + reference + ' \u00b7 ' + (d.bike || {}).name + ' \u00b7 ' + (zakelijk ? 'zakelijk' : 'priv\u00e9'),
+    htmlBody: notificationHtml(reference, d, SpreadsheetApp.getActiveSpreadsheet().getUrl()),
+    body: 'Nieuwe bakfiets-leaseaanvraag ' + reference + '\n' + c.initials + ' ' + c.lastName + ' \u00b7 ' + c.email + ' \u00b7 ' + c.phone +
+      '\n' + bikeLine(d) + '\nLeaseprijs: ' + eur(d.monthlyInclVat) + ' p/m\n\nAlle gegevens: ' + SpreadsheetApp.getActiveSpreadsheet().getUrl(),
   });
+}
+
+/** Opmaak van de salesmail: inline stijlen en tabellen, zodat hij in Outlook en Gmail hetzelfde oogt. */
+function notificationHtml(reference, d, sheetUrl) {
+  var c = d.customer;
+  var b = d.business;
+  var bike = d.bike || {};
+  var zakelijk = c.leaseVia === 'zakelijk';
+  var green = '#5b7835', ink = '#121612', muted = '#5f635e', line = '#e6e6e3', soft = '#f5f5f4';
+  function label(s) { return '<div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:' + muted + ';font-weight:bold;margin:0 0 8px">' + esc(s) + '</div>'; }
+  function kv(k, v) { return '<tr><td style="padding:3px 16px 3px 0;color:' + muted + ';font-size:14px;vertical-align:top;white-space:nowrap">' + esc(k) + '</td><td style="padding:3px 0;color:' + ink + ';font-size:14px">' + v + '</td></tr>'; }
+  var extras = optionNames(d) || 'Geen';
+  var phoneHref = String(c.phone || '').replace(/[^\d+]/g, '');
+  return '' +
+    '<div style="background:' + soft + ';padding:24px 12px;font-family:Arial,Helvetica,sans-serif">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid ' + line + ';border-radius:10px">' +
+    '<tr><td style="padding:24px 24px 8px">' +
+      '<div style="display:inline-block;background:' + (zakelijk ? '#e8eef7' : '#eef3e6') + ';color:' + (zakelijk ? '#2f4f7f' : green) + ';font-size:12px;font-weight:bold;padding:3px 10px;border-radius:999px">' + (zakelijk ? 'Zakelijk' : 'Priv\u00e9') + ' \u00b7 via ' + esc(d.partner || 'formulier') + '</div>' +
+      '<h1 style="margin:12px 0 4px;font-size:20px;line-height:1.3;color:' + ink + '">Nieuwe bakfiets-leaseaanvraag</h1>' +
+      '<div style="font-size:14px;color:' + muted + '">Referentie <b style="color:' + ink + '">' + esc(reference) + '</b> \u00b7 ' + esc(Utilities.formatDate(new Date(), 'Europe/Amsterdam', 'dd-MM-yyyy HH:mm')) + '</div>' +
+    '</td></tr>' +
+    '<tr><td style="padding:16px 24px">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' + soft + ';border-radius:8px"><tr>' +
+        '<td style="padding:16px">' +
+          '<div style="font-size:16px;font-weight:bold;color:' + ink + '">' + esc(bike.name) + '</div>' +
+          '<div style="font-size:14px;color:' + muted + ';margin-top:2px">' + esc((bike.version === 'dog' ? 'Dog \u00b7 ' : (bike.model === 'vanrixtel' ? 'Family \u00b7 ' : '')) + bike.colorName + ' \u00b7 ' + d.termMonths + ' maanden') + '</div>' +
+          '<div style="font-size:14px;color:' + ink + ';margin-top:8px">Extra\u2019s: ' + esc(extras) + '</div>' +
+        '</td>' +
+        '<td style="padding:16px;text-align:right;vertical-align:top;white-space:nowrap">' +
+          '<div style="font-size:22px;font-weight:bold;color:' + ink + '">' + esc(eur(d.monthlyInclVat)) + '</div>' +
+          '<div style="font-size:12px;color:' + muted + '">per maand incl. btw</div>' +
+        '</td>' +
+      '</tr></table>' +
+    '</td></tr>' +
+    '<tr><td style="padding:8px 24px 0">' + label('Klant') +
+      '<table role="presentation" cellpadding="0" cellspacing="0">' +
+        kv('Naam', esc(c.initials + ' ' + c.lastName)) +
+        kv('E-mail', '<a href="mailto:' + esc(c.email) + '" style="color:' + green + '">' + esc(c.email) + '</a>') +
+        kv('Telefoon', '<a href="tel:' + esc(phoneHref) + '" style="color:' + green + '">' + esc(c.phone) + '</a>') +
+        kv('Plaats', esc(c.city)) +
+        (c.remarks ? kv('Opmerking', esc(c.remarks)) : '') +
+      '</table>' +
+    '</td></tr>' +
+    (zakelijk && b ? '<tr><td style="padding:16px 24px 0">' + label('Bedrijf') +
+      '<table role="presentation" cellpadding="0" cellspacing="0">' +
+        kv('Bedrijfsnaam', esc(b.company)) +
+        kv('KVK-nummer', esc(b.kvk)) +
+        kv('Tekeningsbevoegd', esc(b.signatory)) +
+      '</table></td></tr>' : '') +
+    '<tr><td style="padding:24px">' +
+      '<a href="' + esc(sheetUrl) + '" style="display:inline-block;background:' + green + ';color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:8px">Open de aanvraag in de sheet</a>' +
+      '<div style="font-size:12px;color:' + muted + ';margin-top:12px">Adres, geboortedatum' + (zakelijk ? ', btw-nummer en IBAN staan' : ' staan') + ' alleen in de sheet.</div>' +
+    '</td></tr>' +
+    '</table></div>';
 }
 
 function json(obj) {
