@@ -81,8 +81,27 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .step { display: grid; gap: 14px; padding-block: 24px; border-top: 1px solid var(--line); }
 .step:first-child { border-top: 0; padding-top: 0; }
 .step-head { display: flex; align-items: baseline; gap: 12px; }
-.step-no { font-family: var(--font-display); font-weight: 600; font-size: .75rem; color: var(--muted); background: var(--surface); border-radius: 999px; width: 26px; height: 26px; display: grid; place-items: center; flex: none; transform: translateY(-2px); }
-.step-sub { color: var(--muted); font-size: .875rem; margin-left: 38px; margin-top: -8px; }
+.step-no { display: none !important; }
+.step-no-old { font-family: var(--font-display); font-weight: 600; font-size: .75rem; color: var(--muted); background: var(--surface); border-radius: 999px; width: 26px; height: 26px; display: grid; place-items: center; flex: none; transform: translateY(-2px); }
+.step-sub { color: var(--muted); font-size: .875rem; margin-top: -8px; }
+.panel > .step:first-child { border-top: 0; padding-top: 0; }
+/* Stappenbalk */
+.progress { margin-bottom: 24px; }
+.progress ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.progress button { width: 100%; display: flex; align-items: center; gap: 10px; background: none; border: 0; border-top: 3px solid var(--line); padding: 10px 0 0; cursor: pointer; text-align: left; color: var(--muted); font-size: .875rem; }
+.progress .p-no { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: .75rem; background: var(--surface); color: var(--muted); flex: none; }
+.progress [aria-current="step"] { border-top-color: var(--green-ink); color: var(--ink); font-weight: 600; }
+.progress [aria-current="step"] .p-no { background: var(--green-ink); color: var(--on-green); }
+.progress .done { border-top-color: var(--green); color: var(--text); }
+.progress .done .p-no { background: var(--green-soft); color: var(--green-ink); font-size: 0; }
+.progress .done .p-no::after { content: "\2713"; font-size: .8rem; }
+/* Navigatie onder elke stap */
+.panel-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 20px; margin-top: 4px; }
+.nav-btns { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+.nav-price small { display: block; font-size: .75rem; color: var(--muted); }
+.nav-price strong { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; color: var(--ink); }
+@media (min-width: 960px) { .nav-price { display: none; } }
+@media (max-width: 420px) { .panel-nav .btn { padding-inline: 16px; } .progress .p-lbl { font-size: .8125rem; } }
 
 /* Modellen */
 .models { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
@@ -288,6 +307,15 @@ html.framed .wrap { padding-block-end: 32px; }
 
   <div class="layout" id="configurator">
     <div>
+      <nav class="progress" id="progress" aria-label="Stappen">
+        <ol>
+          <li><button type="button" data-go="1"><span class="p-no">1</span><span class="p-lbl">Bakfiets</span></button></li>
+          <li><button type="button" data-go="2"><span class="p-no">2</span><span class="p-lbl">Opties</span></button></li>
+          <li><button type="button" data-go="3"><span class="p-no">3</span><span class="p-lbl">Gegevens</span></button></li>
+        </ol>
+      </nav>
+
+      <div class="panel" data-panel="1">
       <section class="step" aria-labelledby="s1">
         <div class="step-head"><span class="step-no">1</span><h2 id="s1">Kies je bakfiets</h2></div>
         <div class="models" role="radiogroup" aria-labelledby="s1" id="models"></div>
@@ -305,6 +333,13 @@ html.framed .wrap { padding-block-end: 32px; }
         <div class="preview"><img id="preview-img" alt=""></div>
       </section>
 
+      <div class="panel-nav">
+        <div class="nav-price"><small>Leaseprijs</small><strong class="num" data-pm></strong></div>
+        <div class="nav-btns"><button type="button" class="btn" data-go="2">Volgende: opties</button></div>
+      </div>
+      </div>
+
+      <div class="panel" data-panel="2" hidden>
       <section class="step" aria-labelledby="s4">
         <div class="step-head"><span class="step-no">4</span><h2 id="s4">Pakket en extra’s</h2></div>
         <div class="plus" id="plus"></div>
@@ -317,6 +352,13 @@ html.framed .wrap { padding-block-end: 32px; }
         <div class="terms" role="radiogroup" aria-labelledby="s5" id="terms"></div>
       </section>
 
+      <div class="panel-nav">
+        <div class="nav-price"><small>Leaseprijs</small><strong class="num" data-pm></strong></div>
+        <div class="nav-btns"><button type="button" class="btn ghost" data-go="1">Terug</button><button type="button" class="btn" data-go="3">Volgende: jouw gegevens</button></div>
+      </div>
+      </div>
+
+      <div class="panel" data-panel="3" hidden>
       <section class="step" aria-labelledby="s6" id="gegevens">
         <div class="step-head"><span class="step-no">6</span><h2 id="s6">Jouw gegevens</h2></div>
         <form class="form" id="form" novalidate>
@@ -365,6 +407,8 @@ html.framed .wrap { padding-block-end: 32px; }
             <a class="tp" href="https://nl.trustpilot.com/review/fietsleaseholland.nl" target="_blank" rel="noopener"><span class="tp-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="half"></i></span><span><b>4,6</b> uit 5 op Trustpilot · Fietslease Holland</span></a></div>
         </form>
       </section>
+      <div class="panel-nav"><div class="nav-btns"><button type="button" class="btn ghost" data-go="2">Terug naar opties</button></div></div>
+      </div>
     </div>
 
     <aside class="summary" aria-labelledby="sum-h" id="summary">
@@ -374,7 +418,7 @@ html.framed .wrap { padding-block-end: 32px; }
       <p class="incl-h">In je leaseprijs</p>
       <dl class="lines" id="sum-lines"></dl>
       <p class="tagline">Jij fietst, wij regelen de rest.</p>
-      <a class="btn block" href="#gegevens" id="sum-cta">Aanvragen</a>
+      <button type="button" class="btn block" id="sum-cta">Volgende: opties</button>
       <p class="cta-note">Gratis en vrijblijvend · binnen 48 uur geregeld</p>
     </aside>
   </div>
@@ -418,7 +462,7 @@ html.framed .wrap { padding-block-end: 32px; }
   </footer>
 </main>
 
-<div class="mbar" id="mbar"><div><small id="mbar-lbl">Leaseprijs per maand</small><strong class="num" id="mbar-total"></strong></div><a class="btn" href="#gegevens">Aanvragen</a></div>
+<div class="mbar" id="mbar"><div><small id="mbar-lbl">Leaseprijs per maand</small><strong class="num" id="mbar-total"></strong></div><button type="button" class="btn" id="mbar-cta">Volgende</button></div>
 
 <script>
 /* ------------------------------------------------------------------
@@ -823,6 +867,7 @@ function renderSummary() {
   $('sum-monthly').className = 'monthly' + (pm == null ? ' pending' : '');
   $('sum-monthly').innerHTML = `<small>Leaseprijs per maand</small><strong class="num">${pm == null ? 'Op aanvraag' : eur(pm)} ${pm == null ? '' : '<span>p/m</span>'}</strong><em>${state.term} maanden, incl. btw</em>`;
   $('mbar-total').textContent = pm == null ? 'Op aanvraag' : `${eur(pm)} p/m`;
+  document.querySelectorAll('[data-pm]').forEach((el) => { el.textContent = pm == null ? 'Op aanvraag' : `${eur(pm)} p/m`; });
   $('form-price').innerHTML = `<span>Jouw leaseprijs · ${state.term} maanden, incl. btw</span><strong class="num">${pm == null ? 'Op aanvraag' : eur(pm) + ' p/m'}</strong>`;
 }
 function render() { renderModels(); renderVersions(); renderColors(); renderPlus(); renderOptions(); renderSummary(); }
@@ -1003,6 +1048,32 @@ $('birthDate').addEventListener('input', (e) => {
   const parts = [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4)].filter(Boolean);
   el.value = parts.join('-');
 });
+
+/* ------------------------------------------------------------------
+ * Stappen: 1 Bakfiets, 2 Opties, 3 Gegevens
+ * ------------------------------------------------------------------ */
+let currentStep = 1;
+const NEXT_LABEL = { 1: 'Volgende: opties', 2: 'Volgende: jouw gegevens' };
+function goTo(n, scroll = true) {
+  currentStep = n;
+  document.querySelectorAll('[data-panel]').forEach((p) => { p.hidden = +p.dataset.panel !== n; });
+  document.querySelectorAll('#progress button').forEach((b) => {
+    const s = +b.dataset.go;
+    b.classList.toggle('done', s < n);
+    if (s === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+  });
+  $('sum-cta').hidden = n === 3; // in stap 3 staat de knop Aanvragen onder het formulier
+  if (n < 3) $('sum-cta').textContent = NEXT_LABEL[n];
+  $('mbar-cta').textContent = n < 3 ? 'Volgende' : 'Aanvragen';
+  if (scroll) scrollToEl($('progress'));
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-go]');
+  if (b) goTo(+b.dataset.go);
+});
+$('sum-cta').addEventListener('click', () => goTo(Math.min(currentStep + 1, 3)));
+$('mbar-cta').addEventListener('click', () => (currentStep < 3 ? goTo(currentStep + 1) : $('form').requestSubmit()));
+goTo(1, false);
 
 radioKeys($('models')); radioKeys($('versions')); radioKeys($('colors')); radioKeys($('terms')); radioKeys($('via'));
 $('usp-from').textContent = `Lease vanaf ${eur(Math.min(...MODELS.map((m) => staffel(inc(m.lease), 48))))} per maand`;
