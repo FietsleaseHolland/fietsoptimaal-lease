@@ -32,7 +32,7 @@ function doPost(e) {
 
 /** Handig om te testen: open de web-app-URL in je browser. */
 function doGet() {
-  return json({ ok: true, service: 'bakfiets-lease-aanvragen' });
+  return json({ ok: true, service: 'bakfiets-lease-aanvragen', versie: '2026-10-09-salesmail' });
 }
 
 function handle(d) {
