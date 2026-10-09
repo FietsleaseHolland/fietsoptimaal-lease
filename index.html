@@ -305,6 +305,7 @@ html.framed .wrap { padding-block-end: 32px; }
         <div class="step-head"><span class="step-no">4</span><h2 id="s4">Pakket en extra’s</h2></div>
         <div class="plus" id="plus"></div>
         <div class="options" id="options"></div>
+        <div class="options" id="gps-row"></div>
       </section>
 
       <section class="step" aria-labelledby="s5">
@@ -386,7 +387,7 @@ html.framed .wrap { padding-block-end: 32px; }
     <div>
       <h3 class="sub-h">Dit zit altijd in je leaseprijs</h3>
       <ul class="incl">
-        <li><b>Casco-verzekering</b><span>Tegen schade en diefstal. Eigen risico 5%, minimaal € 50.</span></li>
+        <li><b>Casco-verzekering</b><span>Tegen schade en diefstal.</span></li>
         <li><b>Onderhoud en reparaties</b><span>Je bakfiets blijft het hele contract in topconditie.</span></li>
         <li><b>24/7 pechhulp</b><span>In heel Europa, dag en nacht.</span></li>
         <li><b>Verlengde accugarantie</b><span>Geen zorgen over een dure nieuwe accu.</span></li>
@@ -593,7 +594,8 @@ const PLUS_ITEMS = [
 const MODELS = [
   {
     id: 'royal-3w', name: 'Royal Cargo Bike 3W Premium Plus', meta: 'Driewieler · tot 4 kinderen · middenmotor',
-    advies: 4544.63, lease: 3511.57, plus: 396.00,
+    advies: 4544.63, lease: 3511.57, plus: 327.27, // pluspakket € 396 incl. btw (50% van € 792)
+    gps: { name: 'GPS-beveiliging It’s My Bike', note: 'Verplicht bij een fietswaarde boven € 4.999 (eis van de verzekering). Alarm, live volgen en hulp bij diefstal; 5 jaar sim en montage inbegrepen.', price: 206.61 },
     colors: [
       { id: 'groen', name: 'Groen', hex: '#5f6d4b', img: 'img/r3-groen.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/royal-cargo-bike/royal-3w-premium-plus-groen' },
       { id: 'antraciet', name: 'Antraciet', hex: '#3b3e41', img: 'img/r3-antraciet.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/royal-cargo-bike/royal-3w-premium-plus-antraciet' },
@@ -609,7 +611,8 @@ const MODELS = [
   },
   {
     id: 'royal-2w', name: 'Royal Cargo Bike 2W Premium Plus', meta: 'Tweewieler · wendbaar en snel · middenmotor',
-    advies: 4544.63, lease: 3511.57, plus: 396.00,
+    advies: 4544.63, lease: 3511.57, plus: 327.27, // pluspakket € 396 incl. btw (50% van € 792)
+    gps: { name: 'GPS-beveiliging It’s My Bike', note: 'Verplicht bij een fietswaarde boven € 4.999 (eis van de verzekering). Alarm, live volgen en hulp bij diefstal; 5 jaar sim en montage inbegrepen.', price: 199.00 },
     colors: [
       { id: 'groen', name: 'Groen', hex: '#5f6d4b', img: 'img/r2-groen.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/2-wielen/royal-2w-premium-plus-groen' },
       { id: 'taupe', name: 'Taupe grijs', hex: '#a49f94', img: 'img/r2-taupe.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/2-wielen/royal-2w-premium-plus-taupegrijs' },
@@ -663,12 +666,24 @@ const model = () => MODELS.find((m) => m.id === state.model);
 const color = () => model().colors.find((c) => c.id === state.color) ?? model().colors[0];
 const photo = (c = color()) => (state.version === 'dog' && c.dogImg) || c.img;
 
-function lines() {
+/* Boven deze fietswaarde (incl. btw, fiets + extra's) eist de verzekering GPS-beveiliging. */
+const GPS_THRESHOLD = 4999;
+/** Alle regels zonder de verplichte GPS. */
+function baseLines() {
   const m = model();
   const out = [[m.versions ? `Fiets (${state.version === 'dog' ? 'Dog' : 'Family'})` : 'Fiets', inc(m.lease)]];
   if (state.version === 'dog') out.push([m.door ? 'Deurtje voorin' : 'Deurtje voorin (inbegrepen)', inc(m.door)]);
   if (state.plus) out.push(['Pluspakket (50% korting)', inc(m.plus)]);
   m.options.filter((o) => state.options.has(o.id)).forEach((o) => out.push([o.name, inc(o.price)]));
+  return out;
+}
+const sum = (ls) => Math.round(ls.reduce((s, [, p]) => s + p, 0) * 100) / 100;
+/** Wordt GPS verplicht bij deze fietswaarde (zonder GPS)? */
+const gpsRequired = (baseValue) => !!model().gps && baseValue > GPS_THRESHOLD;
+const withGps = (baseValue) => baseValue + (gpsRequired(baseValue) ? inc(model().gps.price) : 0);
+function lines() {
+  const out = baseLines();
+  if (gpsRequired(sum(out))) out.push([model().gps.name + ' (verplicht)', inc(model().gps.price)]);
   return out;
 }
 const total = () => Math.round(lines().reduce((s, [, p]) => s + p, 0) * 100) / 100;
@@ -681,9 +696,10 @@ function staffel(amount, term) {
 const monthly = (term = state.term) => staffel(total(), term);
 /** Wat een extra (incl. btw) bij de huidige samenstelling aan de maandprijs toevoegt. */
 function addsPerMonth(priceIncl, selected) {
-  const t = total();
-  const without = staffel(selected ? t - priceIncl : t, state.term);
-  const withIt = staffel(selected ? t : t + priceIncl, state.term);
+  // Rekent de verplichte GPS mee: een extra die de fietswaarde boven € 4.999 tilt, maakt ook GPS verplicht
+  const base = sum(baseLines());
+  const without = staffel(withGps(selected ? base - priceIncl : base), state.term);
+  const withIt = staffel(withGps(selected ? base : base + priceIncl), state.term);
   return without == null || withIt == null ? null : Math.round((withIt - without) * 100) / 100;
 }
 const pmLabel = (d) => d == null ? 'op aanvraag' : d === 0 ? 'geen meerprijs' : `+ ${eur(d)} p/m`;
@@ -811,6 +827,10 @@ function renderSummary() {
   const included = [...extras, 'Verzekering tegen schade en diefstal', 'Onderhoud en reparaties', '24/7 pechhulp in heel Europa', 'Verlengde accugarantie'];
   $('sum-lines').innerHTML = included.map((n) => `<div><dt>${esc(n)}</dt></div>`).join('');
   updateDeltas();
+  const m2 = model();
+  $('gps-row').innerHTML = gpsRequired(sum(baseLines()))
+    ? `<label class="check"><input type="checkbox" checked disabled><span><b>${esc(m2.gps.name)}</b><small>${esc(m2.gps.note)}</small></span><span class="price num">Verplicht</span></label>`
+    : '';
   const pm = monthly();
   $('sum-monthly').className = 'monthly' + (pm == null ? ' pending' : '');
   $('sum-monthly').innerHTML = `<small>Leaseprijs per maand</small><strong class="num">${pm == null ? 'Op aanvraag' : eur(pm)} ${pm == null ? '' : '<span>p/m</span>'}</strong><em>${state.term} maanden, incl. btw</em>`;

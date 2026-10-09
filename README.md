@@ -21,7 +21,8 @@ Alles staat bovenin het script in `index.html`:
 
 - `MODELS` – modellen, kleuren, opties. Prijzen **excl. btw**, zoals in "FIETSLEASE HOLLAND OPZET.xlsx". De pagina toont ze incl. btw (× 1,21).
 - `PLUS_ITEMS` – inhoud van het pluspakket (winkelwaarde incl. btw).
-- `STAFFEL` – de E-Bike-staffel uit "250506 staffellijst FLH.xlsx": totaalprijs incl. btw wordt afgerond naar de eerstvolgende staffel. De regel van € 5.449 (36 mnd stond op € 210) is op `null` gezet en valt terug op de volgende staffel.
+- `STAFFEL` – de E-Bike-staffel uit "250506 staffellijst FLH.xlsx": totaalprijs incl. btw wordt afgerond naar de eerstvolgende staffel. (De regel van € 5.449 bij 36 mnd stond op € 210 en is op `null` gezet; met de huidige modellen kom je daar niet.)
+- `GPS_THRESHOLD` – boven € 4.999 fietswaarde (incl. btw) wordt GPS-beveiliging automatisch toegevoegd (eis verzekering). Alleen bij modellen met een `gps`-veld (de Royals).
 
 ## Inbouwen op de site van de partner
 
