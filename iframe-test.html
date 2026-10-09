@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iframe-test bakfiets lease</title>
+<style>
+  body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: #eceff1; color: #222; }
+  .bar { background: #37474f; color: #fff; padding: 14px 16px; font-size: 14px; }
+  .bar b { font-weight: 600; }
+  .page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 48px; }
+  .fake { background: #fff; border: 2px dashed #b0bec5; border-radius: 8px; padding: 20px; color: #607d8b; font-size: 14px; margin-bottom: 24px; }
+  .frame-box { background: #fff; border-radius: 8px; overflow: hidden; outline: 2px solid #ff9800; }
+  .hint { font-size: 13px; color: #607d8b; margin: 8px 0 0; }
+  .widths { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .widths button { font: inherit; font-size: 13px; padding: 6px 12px; border: 1px solid #90a4ae; background: #fff; border-radius: 6px; cursor: pointer; }
+</style>
+</head>
+<body>
+  <div class="bar"><b>Testpagina</b> · zo ziet het formulier eruit als iframe op de site van de partner. Het oranje kader is de rand van het iframe.</div>
+  <div class="page">
+    <div class="fake">Hier staat straks de bestaande inhoud van de partnerpagina (menu, tekst, producten).</div>
+
+    <div class="widths">
+      <span style="align-self:center;font-size:13px;color:#607d8b">Breedte iframe:</span>
+      <button type="button" data-w="100%">Volledig</button>
+      <button type="button" data-w="768px">Tablet (768)</button>
+      <button type="button" data-w="390px">Telefoon (390)</button>
+    </div>
+
+    <div class="frame-box" id="frame-box">
+      <!-- ===== Begin embedcode (dit plakt de partner op zijn pagina) ===== -->
+      <iframe id="flh-bakfiets-lease" src="index.html" title="Bakfiets lease aanvragen" style="display:block;width:100%;height:2400px;border:0" loading="lazy"></iframe>
+      <script>
+        (function () {
+          var frame = document.getElementById('flh-bakfiets-lease');
+          var origin = new URL(frame.src, location.href).origin;
+          window.addEventListener('message', function (e) {
+            if (e.origin !== origin || !e.data || e.data.type !== 'lease-form:height') return;
+            frame.style.height = e.data.height + 'px';
+          });
+        })();
+      </script>
+      <!-- ===== Einde embedcode ===== -->
+    </div>
+    <p class="hint">Het iframe past zijn hoogte automatisch aan de inhoud aan, dus er komt geen tweede scrollbalk.</p>
+
+    <div class="fake" style="margin-top:24px">Footer van de partnerpagina.</div>
+  </div>
+  <script>
+    document.querySelectorAll('[data-w]').forEach(function (b) {
+      b.onclick = function () { var box = document.getElementById('frame-box'); box.style.maxWidth = b.dataset.w; box.style.margin = '0 auto'; };
+    });
+  </script>
+</body>
+</html>

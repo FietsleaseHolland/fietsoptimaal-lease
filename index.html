@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bakfiets Leaseaanvraag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap">
+<style>
+/* Layout: configurator in genummerde stappen links, vaste samenvatting rechts (mobiel: balk onderin). Huisstijl Fietslease Holland, zonder logo. */
+:root {
+  --bg: #ffffff;
+  --surface: #f5f5f4;
+  --surface-2: #ececea;
+  --line: #e6e6e3;
+  --line-strong: #d4d5d1;
+  --ink: #121612;
+  --text: #2b302b;
+  --muted: #5f635e;
+  --green: #7fa34b;
+  --green-ink: #5b7835;
+  --green-soft: #eef3e6;
+  --green-tint: #dce7cb;
+  --on-green: #ffffff;
+  --sun: #f1d976;
+  --sun-ink: #4a3d05;
+  --danger: #c2261e;
+  --photo: #ffffff;
+  --star: #00b67a;
+  --shadow: 0 1px 2px rgb(15 19 15 / .05), 0 12px 32px -10px rgb(15 19 15 / .18);
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --r-card: 8px;
+  --r-panel: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f130f; --surface: #181c18; --surface-2: #222623; --line: #2a2f2a; --line-strong: #3a403a;
+  --ink: #f3f5f1; --text: #d9ddd6; --muted: #a3a8a0; --green: #9abd67; --green-ink: #a6c873; --green-soft: #1d2617;
+  --green-tint: #2c3a20; --on-green: #10160c; --sun: #f1d976; --sun-ink: #4a3d05; --danger: #ff7a70; --photo: #ffffff;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 32px -10px rgb(0 0 0 / .6); color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f130f; --surface: #181c18; --surface-2: #222623; --line: #2a2f2a; --line-strong: #3a403a;
+  --ink: #f3f5f1; --text: #d9ddd6; --muted: #a3a8a0; --green: #9abd67; --green-ink: #a6c873; --green-soft: #1d2617;
+  --green-tint: #2c3a20; --on-green: #10160c; --sun: #f1d976; --sun-ink: #4a3d05; --danger: #ff7a70; --photo: #ffffff;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 32px -10px rgb(0 0 0 / .6); color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; height: auto; display: block; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--font-display); color: var(--ink); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.25rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; }
+h1 em { font-style: normal; color: var(--green-ink); }
+h2 { font-size: 1.15rem; font-weight: 600; letter-spacing: -.02em; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--green-ink); outline-offset: 3px; border-radius: 6px; }
+::selection { background: var(--green-tint); color: var(--ink); }
+.num { font-variant-numeric: tabular-nums; }
+
+.wrap { max-width: 1120px; margin-inline: auto; padding-inline: 16px; padding-block: 28px 120px; }
+@media (min-width: 700px) { .wrap { padding-inline: 28px; padding-block: 36px 48px; } }
+
+.intro { display: grid; gap: 10px; max-width: 62ch; margin-bottom: 28px; }
+.intro p { color: var(--muted); font-size: 1rem; }
+.usp { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 6px; padding: 0; list-style: none; font-size: .875rem; color: var(--text); }
+.usp li { display: flex; align-items: center; gap: 7px; }
+.usp li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex: none; }
+
+.layout { display: grid; gap: 28px; align-items: start; }
+@media (min-width: 960px) { .layout { grid-template-columns: minmax(0, 1fr) 340px; gap: 40px; } }
+
+.step { display: grid; gap: 14px; padding-block: 24px; border-top: 1px solid var(--line); }
+.step:first-child { border-top: 0; padding-top: 0; }
+.step-head { display: flex; align-items: baseline; gap: 12px; }
+.step-no { font-family: var(--font-display); font-weight: 600; font-size: .8rem; color: var(--green-ink); background: var(--green-soft); border-radius: 999px; width: 26px; height: 26px; display: grid; place-items: center; flex: none; transform: translateY(-2px); }
+.step-sub { color: var(--muted); font-size: .875rem; margin-left: 38px; margin-top: -8px; }
+
+/* Modellen */
+.models { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.model { position: relative; display: grid; grid-template-rows: auto 1fr; text-align: left; background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--r-panel); padding: 0; cursor: pointer; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+.model:hover { border-color: var(--line-strong); }
+.model[aria-checked="true"] { border-color: var(--green-ink); box-shadow: 0 0 0 3px var(--green-tint); }
+.model-photo { background: var(--photo); aspect-ratio: 16 / 10; display: grid; place-items: center; padding: 10px; border-bottom: 1px solid var(--line); }
+.model-photo { overflow: hidden; }
+.model-photo img { width: 100%; height: 100%; object-fit: contain; }
+.model-body { display: grid; gap: 4px; padding: 12px 14px 14px; align-content: start; }
+.model-name { font-family: var(--font-display); font-weight: 600; color: var(--ink); font-size: 1rem; letter-spacing: -.015em; line-height: 1.25; }
+.model-meta { font-size: .8125rem; color: var(--muted); }
+.model-price { margin-top: 6px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.model-price strong { font-family: var(--font-display); font-size: 1.15rem; color: var(--ink); }
+.model-price s { font-size: .8125rem; color: var(--muted); }
+.tag { position: absolute; top: 10px; left: 10px; background: var(--sun); color: var(--sun-ink); font-size: .6875rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; }
+
+/* Segment (Family / Dog) */
+.versions { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.version { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; text-align: left; background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--r-panel); padding: 14px 16px; cursor: pointer; }
+.version:hover { border-color: var(--line-strong); }
+.version[aria-checked="true"] { border-color: var(--green-ink); background: var(--green-soft); }
+.version .radio { grid-row: span 2; margin-top: 3px; }
+.version b { font-family: var(--font-display); font-weight: 600; color: var(--ink); }
+.version span:last-child { font-size: .8125rem; color: var(--muted); }
+.radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line-strong); display: grid; place-items: center; background: var(--bg); }
+[aria-checked="true"] > .radio { border-color: var(--green-ink); }
+[aria-checked="true"] > .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green-ink); }
+
+/* Kleur */
+.colors { display: flex; flex-wrap: wrap; gap: 10px; }
+.color { display: flex; align-items: center; gap: 9px; border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 14px 6px 6px; background: var(--bg); cursor: pointer; font-size: .875rem; }
+.color:hover { border-color: var(--line-strong); }
+.color[aria-checked="true"] { border-color: var(--green-ink); box-shadow: 0 0 0 3px var(--green-tint); }
+.swatch { width: 24px; height: 24px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .15); }
+
+.preview { display: grid; gap: 14px; grid-template-columns: 1fr; background: var(--photo); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 16px; }
+.preview img { width: 100%; max-height: 300px; object-fit: contain; }
+
+/* Pluspakket */
+.plus { display: grid; gap: 14px; border: 1.5px solid var(--green-ink); border-radius: var(--r-panel); padding: 18px; background: var(--green-soft); }
+.plus-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.plus-top h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -.015em; }
+.plus-top .badge { display: inline-block; margin-left: 8px; background: var(--green-ink); color: var(--on-green); font-family: var(--font-sans); font-size: .6875rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; vertical-align: 2px; }
+.plus-price { text-align: right; }
+.plus-price strong { font-family: var(--font-display); font-size: 1.2rem; color: var(--ink); display: block; }
+.plus-price s { font-size: .8125rem; color: var(--muted); }
+.plus ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); font-size: .875rem; }
+.plus li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed var(--green-tint); padding-bottom: 6px; }
+.plus li span:last-child { color: var(--muted); white-space: nowrap; }
+
+/* Toggle & checkbox rijen */
+.check { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: start; padding: 13px 16px; border: 1.5px solid var(--line); border-radius: var(--r-card); background: var(--bg); cursor: pointer; }
+.check:hover { border-color: var(--line-strong); }
+.check:has(input:checked) { border-color: var(--green-ink); }
+.check:has(input:disabled) { cursor: default; opacity: .85; }
+.check input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--green-ink); }
+.check b { font-weight: 600; color: var(--ink); font-size: .9375rem; }
+.check small { display: block; color: var(--muted); font-size: .8125rem; margin-top: 2px; }
+.check .price { font-weight: 600; color: var(--ink); white-space: nowrap; font-size: .9375rem; }
+.check .price.incl { color: var(--green-ink); }
+.check .price small { display: block; font-weight: 400; color: var(--muted); text-align: right; }
+.plus .check { background: var(--bg); }
+.options { display: grid; gap: 8px; }
+
+.terms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 420px; }
+.term { border: 1.5px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; text-align: left; cursor: pointer; background: var(--bg); display: grid; gap: 2px; }
+.term[aria-checked="true"] { border-color: var(--green-ink); background: var(--green-soft); }
+.term b { font-family: var(--font-display); font-weight: 600; color: var(--ink); font-size: 1.05rem; }
+.term span { font-size: .8125rem; color: var(--muted); }
+
+/* Formulier */
+.form { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+.biz { grid-column: 1 / -1; margin: 0; border: 1.5px solid var(--line); border-radius: var(--r-panel); padding: 14px 16px 16px; display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
+.biz legend { font-family: var(--font-display); font-weight: 600; color: var(--ink); padding: 0 6px; }
+@media (max-width: 560px) { .biz { grid-template-columns: minmax(0, 1fr); } }
+.field.addr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+@media (max-width: 560px) { .form { grid-template-columns: minmax(0, 1fr); } }
+label.lbl { font-size: .8125rem; font-weight: 600; color: var(--ink); }
+label.lbl .opt { font-weight: 400; color: var(--muted); }
+.input, select.input, textarea.input { width: 100%; border: 1.5px solid var(--line-strong); border-radius: var(--r-card); padding: 11px 12px; background: var(--bg); color: var(--ink); min-height: 46px; }
+textarea.input { min-height: 88px; resize: vertical; }
+.input:focus { outline: none; border-color: var(--green-ink); box-shadow: 0 0 0 3px var(--green-tint); }
+.field.invalid .input { border-color: var(--danger); }
+.err { font-size: .8125rem; color: var(--danger); min-height: 0; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { border: 1.5px solid var(--line-strong); background: var(--bg); border-radius: 999px; padding: 8px 14px; font-size: .875rem; cursor: pointer; }
+.seg button[aria-checked="true"] { border-color: var(--green-ink); background: var(--green-ink); color: var(--on-green); }
+.consent { display: flex; gap: 10px; align-items: flex-start; font-size: .875rem; color: var(--text); }
+.consent input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green-ink); flex: none; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.btn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--green-ink); color: var(--on-green); border: 0; border-radius: var(--r-card); padding: 14px 22px; font-weight: 600; font-size: 1rem; cursor: pointer; min-height: 50px; transition: filter .15s; }
+.btn:hover { filter: brightness(1.08); }
+.btn[disabled] { opacity: .6; cursor: progress; }
+.btn.block { width: 100%; }
+.btn.ghost { background: transparent; color: var(--green-ink); border: 1.5px solid var(--green-ink); }
+
+/* Samenvatting */
+.summary { display: grid; gap: 14px; background: var(--surface); border-radius: var(--r-panel); padding: 20px; }
+/* Smal scherm: de samenvatting staat vlak boven 'Jouw gegevens', dus geen tweede knop */
+/* Telefoon en tablet: geen samenvatting (de balk onderin toont de maandprijs), wel de USP's onder de knop */
+@media (max-width: 959px) { .summary { display: none; } }
+@media (min-width: 960px) { .usp-under, .form-price { display: none !important; } }
+.form-price { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; background: var(--surface); border-radius: var(--r-card); padding: 14px 16px; }
+.form-price span { color: var(--muted); font-size: .875rem; }
+.form-price strong { font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); letter-spacing: -.02em; }
+/* In een iframe werkt een vaste balk onderin niet (hij staat dan onderaan het frame) */
+html.framed .mbar { display: none !important; }
+html.framed .wrap { padding-block-end: 32px; }
+.usp-under { display: grid; gap: 6px 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 0; padding: 0; list-style: none; font-size: .875rem; color: var(--text); }
+.usp-under li { display: flex; gap: 8px; }
+.usp-under li::before { content: "✓"; color: var(--green-ink); font-weight: 700; }
+.cta-note { font-size: .8125rem; color: var(--muted); text-align: center; margin-top: -4px; }
+@media (min-width: 960px) { .summary { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); } }
+.summary h2 { font-size: 1.05rem; }
+.sum-bike { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: center; }
+.sum-bike .ph { background: var(--photo); border-radius: 6px; aspect-ratio: 4 / 3; display: grid; place-items: center; padding: 4px; }
+.sum-bike .ph { overflow: hidden; }
+.sum-bike img { width: 100%; height: 100%; object-fit: contain; }
+.sum-bike b { display: block; color: var(--ink); font-weight: 600; font-size: .9375rem; line-height: 1.3; }
+.sum-bike span { font-size: .8125rem; color: var(--muted); }
+.lines { display: grid; gap: 8px; margin: 0; padding: 12px 0 0; border-top: 1px solid var(--line-strong); font-size: .875rem; }
+.lines div { display: flex; justify-content: space-between; gap: 12px; }
+.tagline { font-family: var(--font-display); font-weight: 600; color: var(--green-ink); font-size: 1rem; letter-spacing: -.01em; }
+.incl-h { font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: -6px; }
+.lines dt { display: flex; gap: 8px; }
+.lines dt::before { content: "✓"; color: var(--green-ink); font-weight: 600; }
+.lines dt { color: var(--text); min-width: 0; }
+.lines dd { margin: 0; color: var(--ink); white-space: nowrap; }
+.total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-top: 1px solid var(--line-strong); padding-top: 12px; }
+.total span { font-weight: 600; color: var(--ink); }
+.total strong { font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); letter-spacing: -.02em; }
+.save { font-size: .8125rem; color: var(--green-ink); font-weight: 600; }
+.note { font-size: .8125rem; color: var(--muted); }
+.monthly { display: grid; gap: 2px; background: var(--bg); border-radius: var(--r-card); padding: 14px 16px; }
+.monthly small { font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.monthly strong { font-family: var(--font-display); font-size: 1.9rem; line-height: 1.1; color: var(--ink); letter-spacing: -.02em; }
+.monthly strong span { font-family: var(--font-sans); font-size: .875rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.monthly.pending strong { color: var(--muted); }
+.monthly em { font-style: normal; font-size: .8125rem; color: var(--muted); }
+.model-month { font-size: .8125rem; color: var(--green-ink); font-weight: 600; }
+
+.mbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--bg); border-top: 1px solid var(--line); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 -8px 24px -12px rgb(0 0 0 / .2); }
+.mbar small { display: block; font-size: .75rem; color: var(--muted); }
+.mbar strong { font-family: var(--font-display); font-size: 1.2rem; color: var(--ink); }
+.mbar .btn { min-height: 44px; padding: 10px 16px; font-size: .9375rem; }
+@media (min-width: 960px) { .mbar { display: none; } }
+
+.done { display: grid; gap: 16px; max-width: 620px; padding: 28px; border-radius: var(--r-panel); background: var(--green-soft); border: 1.5px solid var(--green-ink); }
+.done .ref { font-family: var(--font-display); font-weight: 600; color: var(--ink); font-size: 1.1rem; }
+.done ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.done ol li::marker { color: var(--green-ink); font-weight: 600; }
+
+.tp { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .875rem; color: var(--text); text-decoration: none; }
+.tp:hover span:last-child { text-decoration: underline; }
+.tp b { color: var(--ink); }
+.tp-stars { display: inline-flex; gap: 2px; }
+.tp-stars i { width: 18px; height: 18px; background: var(--star); display: grid; place-items: center; }
+.tp-stars i::after { content: "★"; color: #fff; font-style: normal; font-size: 13px; line-height: 1; }
+.tp-stars i.half { background: linear-gradient(90deg, var(--star) 60%, var(--line-strong) 60%); }
+.promise { display: flex; align-items: center; gap: 12px; background: var(--green-soft); border-radius: var(--r-card); padding: 12px 14px; font-size: .9375rem; color: var(--ink); }
+.promise strong { font-family: var(--font-display); font-size: 1.35rem; color: var(--green-ink); white-space: nowrap; }
+.explain { margin-top: 40px; display: grid; gap: 28px; padding-top: 32px; border-top: 1px solid var(--line); }
+.explain > h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.75rem); font-weight: 700; letter-spacing: -.03em; }
+.how { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 0; padding: 0; list-style: none; counter-reset: how; }
+.how li { counter-increment: how; display: grid; gap: 4px; padding: 16px; border: 1px solid var(--line); border-radius: var(--r-panel); }
+.how li::before { content: counter(how); font-family: var(--font-display); font-weight: 600; font-size: .8rem; color: var(--green-ink); background: var(--green-soft); border-radius: 999px; width: 26px; height: 26px; display: grid; place-items: center; margin-bottom: 4px; }
+.how b, .incl b { color: var(--ink); font-weight: 600; }
+.how span, .incl span { font-size: .875rem; color: var(--muted); }
+.incl { display: grid; gap: 10px 24px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 0; padding: 0; list-style: none; }
+.incl li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
+.incl li::before { content: "✓"; grid-row: span 2; color: var(--green-ink); font-weight: 700; }
+.faq { display: grid; gap: 8px; }
+.faq details { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 16px; }
+.faq summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.faq details p { margin-top: 8px; color: var(--text); font-size: .9375rem; max-width: 68ch; }
+.sub-h { font-size: 1.05rem; margin-bottom: 12px; }
+.foot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.foot a:hover { color: var(--green-ink); }
+.foot { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .75rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<main class="wrap" id="app">
+  <header class="intro">
+    <h1>Lease je <em>bakfiets</em></h1>
+    <p>Eén vast bedrag per maand, met verzekering, onderhoud en pechhulp inbegrepen. Privé of zakelijk. Stel je bakfiets samen en vraag hem vrijblijvend aan. Binnen 48 uur is alles geregeld.</p>
+    <ul class="usp">
+      <li id="usp-from">Lease vanaf € 128,95 per maand</li>
+      <li>100% vrijblijvend aanvragen</li>
+      <li>Binnen 48 uur geregeld</li>
+      <li>Geen BKR-registratie</li>
+      <li><a href="#uitleg" style="color:var(--green-ink)">Hoe werkt leasen?</a></li>
+    </ul>
+    <a class="tp" href="https://nl.trustpilot.com/review/fietsleaseholland.nl" target="_blank" rel="noopener"><span class="tp-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="half"></i></span><span><b>4,6</b> uit 5 op Trustpilot · Fietslease Holland</span></a>
+  </header>
+
+  <div class="layout" id="configurator">
+    <div>
+      <section class="step" aria-labelledby="s1">
+        <div class="step-head"><span class="step-no">1</span><h2 id="s1">Kies je bakfiets</h2></div>
+        <div class="models" role="radiogroup" aria-labelledby="s1" id="models"></div>
+      </section>
+
+      <section class="step" aria-labelledby="s2" id="step-version">
+        <div class="step-head"><span class="step-no">2</span><h2 id="s2">Family of Dog?</h2></div>
+        <p class="step-sub">Dezelfde fiets, anders ingedeeld. Je kunt dit later nog wijzigen.</p>
+        <div class="versions" role="radiogroup" aria-labelledby="s2" id="versions"></div>
+      </section>
+
+      <section class="step" aria-labelledby="s3">
+        <div class="step-head"><span class="step-no">3</span><h2 id="s3">Kies je kleur</h2></div>
+        <div class="colors" role="radiogroup" aria-labelledby="s3" id="colors"></div>
+        <div class="preview"><img id="preview-img" alt=""></div>
+      </section>
+
+      <section class="step" aria-labelledby="s4">
+        <div class="step-head"><span class="step-no">4</span><h2 id="s4">Pakket en extra’s</h2></div>
+        <div class="plus" id="plus"></div>
+        <div class="options" id="options"></div>
+      </section>
+
+      <section class="step" aria-labelledby="s5">
+        <div class="step-head"><span class="step-no">5</span><h2 id="s5">Looptijd</h2></div>
+        <div class="terms" role="radiogroup" aria-labelledby="s5" id="terms"></div>
+      </section>
+
+      <section class="step" aria-labelledby="s6" id="gegevens">
+        <div class="step-head"><span class="step-no">6</span><h2 id="s6">Jouw gegevens</h2></div>
+        <form class="form" id="form" novalidate>
+          <div class="field full">
+            <span class="lbl" id="via-lbl">Hoe wil je leasen?</span>
+            <div class="seg" role="radiogroup" aria-labelledby="via-lbl" id="via"></div>
+          </div>
+          <div class="field" data-f="initials"><label class="lbl" for="initials">Voorletters</label><input class="input" id="initials" autocomplete="off" placeholder="J.A."><span class="err"></span></div>
+          <div class="field" data-f="lastName"><label class="lbl" for="lastName">Achternaam <span class="opt">(met tussenvoegsel)</span></label><input class="input" id="lastName" autocomplete="family-name"><span class="err"></span></div>
+          <div class="field" data-f="birthDate"><label class="lbl" for="birthDate">Geboortedatum</label><input class="input num" id="birthDate" inputmode="numeric" autocomplete="bday" placeholder="dd-mm-jjjj"><span class="err"></span></div>
+          <div class="field" data-f="phone"><label class="lbl" for="phone">Telefoonnummer</label><input class="input" id="phone" type="tel" autocomplete="tel"><span class="err"></span></div>
+          <div class="field full" data-f="email"><label class="lbl" for="email">E-mailadres</label><input class="input" id="email" type="email" autocomplete="email"><span class="err"></span></div>
+          <div class="field full" data-f="street"><label class="lbl" for="street">Straat</label><input class="input" id="street" autocomplete="address-line1"><span class="err"></span></div>
+          <div class="field addr">
+            <div class="field" data-f="houseNumber"><label class="lbl" for="houseNumber">Huisnummer</label><input class="input" id="houseNumber" inputmode="numeric"><span class="err"></span></div>
+            <div class="field"><label class="lbl" for="addition">Toevoeging <span class="opt">(optioneel)</span></label><input class="input" id="addition" placeholder="A, bis, 2-hoog"></div>
+          </div>
+          <div class="field" data-f="postalCode"><label class="lbl" for="postalCode">Postcode</label><input class="input" id="postalCode" autocomplete="postal-code" placeholder="1234 AB"><span class="err"></span></div>
+          <div class="field full" data-f="city"><label class="lbl" for="city">Plaats</label><input class="input" id="city" autocomplete="address-level2"><span class="err"></span></div>
+          <fieldset class="biz full" id="biz" hidden>
+            <legend>Bedrijfsgegevens</legend>
+            <div class="field full" data-f="company"><label class="lbl" for="company">Bedrijfsnaam</label><input class="input" id="company" autocomplete="organization"><span class="err"></span></div>
+            <div class="field" data-f="kvk"><label class="lbl" for="kvk">KVK-nummer</label><input class="input num" id="kvk" inputmode="numeric" maxlength="8" placeholder="12345678"><span class="err"></span></div>
+            <div class="field" data-f="vat"><label class="lbl" for="vat">Btw-nummer</label><input class="input" id="vat" placeholder="NL123456789B01"><span class="err"></span></div>
+            <div class="field full" data-f="signatory"><label class="lbl" for="signatory">Naam tekeningsbevoegd persoon</label><input class="input" id="signatory" autocomplete="name"><span class="err"></span></div>
+            <div class="field full" data-f="iban"><label class="lbl" for="iban">IBAN</label><input class="input num" id="iban" autocomplete="off" placeholder="NL00 BANK 0123 4567 89"><span class="err"></span></div>
+          </fieldset>
+          <div class="field full"><label class="lbl" for="remarks">Vragen of opmerkingen <span class="opt">(optioneel)</span></label><textarea class="input" id="remarks" placeholder="Bijvoorbeeld: ik wil eerst een proefrit maken."></textarea></div>
+          <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" tabindex="-1" autocomplete="off"></div>
+          <div class="field full" data-f="consent">
+            <label class="consent"><input type="checkbox" id="consent"><span>Ik ga ermee akkoord dat mijn gegevens worden gebruikt om een leasevoorstel te maken en dat Fietsoptimaal mijn bestelling mag inzien. Lees de <a href="https://www.fietsleaseholland.nl/privacyverklaring" target="_blank" rel="noopener" style="color:var(--green-ink)">privacyverklaring van Fietslease Holland</a>.</span></label>
+            <span class="err"></span>
+          </div>
+          <div class="field full form-price" id="form-price"></div>
+          <div class="field full" style="gap:14px"><button class="btn" type="submit" id="submit">Aanvragen</button>
+            <p class="note"><b style="color:var(--ink)">Je aanvraag is gratis en vrijblijvend.</b> Je zit pas ergens aan vast als je zelf het leasecontract tekent.</p>
+            <ul class="usp-under">
+              <li>Verzekering tegen schade en diefstal</li>
+              <li>Onderhoud en reparaties</li>
+              <li>24/7 pechhulp in heel Europa</li>
+              <li>Verlengde accugarantie</li>
+              <li>Binnen 48 uur geregeld</li>
+            </ul>
+            <a class="tp" href="https://nl.trustpilot.com/review/fietsleaseholland.nl" target="_blank" rel="noopener"><span class="tp-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="half"></i></span><span><b>4,6</b> uit 5 op Trustpilot · Fietslease Holland</span></a></div>
+        </form>
+      </section>
+    </div>
+
+    <aside class="summary" aria-labelledby="sum-h" id="summary">
+      <h2 id="sum-h">Jouw bakfiets</h2>
+      <div class="sum-bike"><div class="ph"><img id="sum-img" alt=""></div><div><b id="sum-name"></b><span id="sum-variant"></span></div></div>
+      <div class="monthly" id="sum-monthly"></div>
+      <p class="incl-h">In je leaseprijs</p>
+      <dl class="lines" id="sum-lines"></dl>
+      <p class="tagline">Jij fietst, wij regelen de rest.</p>
+      <a class="btn block" href="#gegevens" id="sum-cta">Aanvragen</a>
+      <p class="cta-note">Gratis en vrijblijvend · binnen 48 uur geregeld</p>
+    </aside>
+  </div>
+
+  <section id="done" hidden></section>
+
+  <section class="explain" id="uitleg" aria-labelledby="uitleg-h">
+    <div><h2 id="uitleg-h">Zo werkt bakfiets leasen</h2><p class="tagline" style="margin-top:6px">Jij fietst, wij regelen de rest.</p></div>
+    <ol class="how">
+      <li><b>Vraag vrijblijvend aan</b><span>Kies je bakfiets, kleur, extra’s en looptijd. Aanvragen is gratis en verplicht je tot niets.</span></li>
+      <li><b>Binnen 48 uur geregeld</b><span>We bekijken je aanvraag en sturen je het leasecontract. Pas als jij tekent, is het definitief.</span></li>
+      <li><b>Fietsoptimaal levert</b><span>Je bakfiets wordt rijklaar gemaakt en de levering wordt met je afgesproken.</span></li>
+      <li><b>Fietsen zonder zorgen</b><span>Je betaalt één vast bedrag per maand. Verzekering, onderhoud en pechhulp zijn geregeld.</span></li>
+    </ol>
+    <div>
+      <h3 class="sub-h">Dit zit altijd in je leaseprijs</h3>
+      <ul class="incl">
+        <li><b>Casco-verzekering</b><span>Tegen schade en diefstal. Eigen risico 5%, minimaal € 50.</span></li>
+        <li><b>Onderhoud en reparaties</b><span>Je bakfiets blijft het hele contract in topconditie.</span></li>
+        <li><b>24/7 pechhulp</b><span>In heel Europa, dag en nacht.</span></li>
+        <li><b>Verlengde accugarantie</b><span>Geen zorgen over een dure nieuwe accu.</span></li>
+        <li><b>Geen BKR en geen opstartkosten</b><span>Je betaalt alleen het vaste maandbedrag.</span></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sub-h">Veelgestelde vragen</h3>
+      <div class="faq">
+        <details><summary>Kan ik privé én zakelijk leasen?</summary><p>Ja. Privé betaal je het maandbedrag zelf. Zakelijk (zzp, vof of bv) least je bakfiets via je bedrijf; daarvoor vragen we je KVK-nummer, btw-nummer en IBAN.</p></details>
+        <details><summary>Hoe wordt het maandbedrag bepaald?</summary><p>Het hangt af van de prijs van je bakfiets met de gekozen extra’s en van de looptijd. Bij 48 maanden betaal je minder per maand dan bij 36 maanden.</p></details>
+        <details><summary>Zit ik vast aan mijn aanvraag?</summary><p>Nee. Aanvragen is gratis en vrijblijvend. Je doet een aanvraag, geen aankoop. Pas als je het leasecontract tekent, ga je de lease aan.</p></details>
+        <details><summary>Wie regelt mijn lease?</summary><p>Je leaset via onze leasepartner Fietslease Holland. Zij verzorgen je aanvraag, het contract en de verzekering. Fietsoptimaal levert je bakfiets. Meer over Fietslease Holland lees je op <a href="https://www.fietsleaseholland.nl" target="_blank" rel="noopener" style="color:var(--green-ink)">fietsleaseholland.nl</a>.</p></details>
+        <details><summary>Wat gebeurt er na de looptijd?</summary><p>Je kiest een nieuwe leasefiets uit, of we halen je bakfiets kosteloos bij je op.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Alle prijzen zijn inclusief btw. Leasen gebeurt via onze leasepartner <a href="https://www.fietsleaseholland.nl" target="_blank" rel="noopener">Fietslease Holland</a>; Fietsoptimaal levert de fiets.</span>
+    <a href="https://www.fietsleaseholland.nl/privacyverklaring" target="_blank" rel="noopener">Privacyverklaring</a>
+  </footer>
+</main>
+
+<div class="mbar" id="mbar"><div><small id="mbar-lbl">Leaseprijs per maand</small><strong class="num" id="mbar-total"></strong></div><a class="btn" href="#gegevens">Aanvragen</a></div>
+
+<script>
+/* ------------------------------------------------------------------
+ * Catalogus — prijzen hieronder zijn EXCL. btw, precies zoals in "FIETSLEASE HOLLAND OPZET.xlsx".
+ * Op de pagina tonen we ze incl. btw (x 1,21). Pas hier prijzen, kleuren en opties aan.
+ * ------------------------------------------------------------------ */
+const PARTNER = 'fietsoptimaal';
+const BTW = 1.21;
+
+/* Leaseprijs per maand (incl. btw): totaalprijs incl. btw afgerond naar de eerstvolgende staffel. */
+const STAFFEL = [ // [inkoop t/m incl. btw, huur p/m 36 mnd, huur p/m 48 mnd] — uit "250506 staffellijst FLH.xlsx" (E-Bike)
+  [899, 68.95, 62.95],
+  [949, 70.95, 63.95],
+  [999, 71.95, 65.95],
+  [1049, 74.95, 67.95],
+  [1099, 76.95, 69.95],
+  [1149, 77.95, 70.95],
+  [1199, 79.95, 71.95],
+  [1249, 81.95, 73.95],
+  [1299, 82.95, 74.95],
+  [1349, 84.95, 76.95],
+  [1399, 86.95, 77.95],
+  [1449, 87.95, 79.95],
+  [1499, 89.95, 80.95],
+  [1549, 92.95, 82.95],
+  [1599, 94.95, 84.95],
+  [1649, 95.95, 85.95],
+  [1699, 97.95, 87.95],
+  [1749, 99.95, 88.95],
+  [1799, 100.95, 89.95],
+  [1849, 102.95, 91.95],
+  [1899, 104.95, 92.95],
+  [1949, 105.95, 94.95],
+  [1999, 107.95, 95.95],
+  [2049, 112.95, 99.95],
+  [2099, 114.95, 101.95],
+  [2149, 116.95, 103.95],
+  [2199, 117.95, 104.95],
+  [2249, 119.95, 106.95],
+  [2299, 121.95, 107.95],
+  [2349, 122.95, 108.95],
+  [2399, 124.95, 109.95],
+  [2449, 126.95, 111.95],
+  [2499, 127.95, 113.95],
+  [2549, 129.95, 115.95],
+  [2599, 132.95, 116.95],
+  [2649, 133.95, 118.95],
+  [2699, 135.95, 119.95],
+  [2749, 137.95, 121.95],
+  [2799, 138.95, 122.95],
+  [2849, 139.95, 123.95],
+  [2899, 142.95, 125.95],
+  [2949, 143.95, 126.95],
+  [2999, 145.95, 128.95],
+  [3049, 149.95, 132.95],
+  [3099, 152.95, 134.95],
+  [3149, 153.95, 135.95],
+  [3199, 155.95, 137.95],
+  [3249, 157.95, 138.95],
+  [3299, 158.95, 139.95],
+  [3349, 160.95, 141.95],
+  [3399, 162.95, 142.95],
+  [3449, 164.95, 144.95],
+  [3499, 165.95, 145.95],
+  [3549, 167.95, 146.95],
+  [3599, 169.95, 148.95],
+  [3649, 170.95, 149.95],
+  [3699, 172.95, 151.95],
+  [3749, 174.95, 152.95],
+  [3799, 175.95, 154.95],
+  [3849, 177.95, 155.95],
+  [3899, 179.95, 156.95],
+  [3949, 180.95, 158.95],
+  [3999, 182.95, 159.95],
+  [4049, 188.95, 165.95],
+  [4099, 189.95, 166.95],
+  [4149, 191.95, 167.95],
+  [4199, 193.95, 169.95],
+  [4249, 194.95, 170.95],
+  [4299, 196.95, 172.95],
+  [4349, 198.95, 173.95],
+  [4399, 199.95, 174.95],
+  [4449, 201.95, 176.95],
+  [4499, 203.95, 177.95],
+  [4549, 204.95, 179.95],
+  [4599, 206.95, 180.95],
+  [4649, 208.95, 181.95],
+  [4699, 210.95, 183.95],
+  [4749, 211.95, 184.95],
+  [4799, 213.95, 186.95],
+  [4849, 215.95, 187.95],
+  [4899, 216.95, 189.95],
+  [4949, 218.95, 190.95],
+  [4999, 220.95, 191.95],
+  [5049, 228.95, 199.95],
+  [5099, 229.95, 201.95],
+  [5149, 231.95, 202.95],
+  [5199, 233.95, 203.95],
+  [5249, 235.95, 205.95],
+  [5299, 236.95, 206.95],
+  [5349, 238.95, 208.95],
+  [5399, 240.95, 209.95],
+  [5449, null, 210.95],
+  [5499, 243.95, 212.95],
+  [5549, 245.95, 213.95],
+  [5599, 246.95, 215.95],
+  [5649, 248.95, 216.95],
+  [5699, 250.95, 218.95],
+  [5749, 251.95, 219.95],
+  [5799, 253.95, 220.95],
+  [5849, 255.95, 222.95],
+  [5899, 256.95, 223.95],
+  [5949, 258.95, 225.95],
+  [5999, 260.95, 226.95],
+  [6049, 262.95, 228.95],
+  [6099, 264.95, 230.95],
+  [6149, 266.95, 231.95],
+  [6199, 268.95, 233.95],
+  [6249, 269.95, 234.95],
+  [6299, 271.95, 236.95],
+  [6349, 273.95, 237.95],
+  [6399, 274.95, 238.95],
+  [6449, 276.95, 240.95],
+  [6499, 278.95, 241.95],
+  [6549, 279.95, 243.95],
+  [6599, 281.95, 244.95],
+  [6649, 283.95, 245.95],
+  [6699, 284.95, 247.95],
+  [6749, 286.95, 248.95],
+  [6799, 288.95, 250.95],
+  [6849, 289.95, 251.95],
+  [6899, 291.95, 252.95],
+  [6949, 293.95, 254.95],
+  [6999, 294.95, 255.95],
+  [7049, 299.95, 259.95],
+  [7099, 300.95, 261.95],
+  [7149, 302.95, 262.95],
+  [7199, 304.95, 264.95],
+  [7249, 305.95, 265.95],
+  [7299, 307.95, 266.95],
+  [7349, 308.95, 267.95],
+  [7399, 310.95, 269.95],
+  [7449, 311.95, 270.95],
+  [7499, 313.95, 271.95],
+  [7549, 322.95, 280.95],
+  [7599, 324.95, 281.95],
+  [7649, 325.95, 283.95],
+  [7699, 327.95, 284.95],
+  [7749, 328.95, 285.95],
+  [7799, 330.95, 286.95],
+  [7849, 331.95, 287.95],
+  [7899, 333.95, 289.95],
+  [7949, 334.95, 290.95],
+  [7999, 336.95, 291.95],
+  [8049, 337.65, 293.19],
+  [8099, 339.53, 294.81],
+  [8149, 341.41, 296.43],
+  [8199, 343.3, 298.04],
+  [8249, 345.18, 299.66],
+  [8299, 347.07, 301.27],
+  [8349, 348.95, 302.89],
+  [8399, 350.84, 304.5],
+  [8449, 352.72, 306.12],
+  [8499, 354.61, 307.73],
+  [8549, 356.49, 309.35],
+  [8599, 358.37, 310.96],
+];
+
+const PLUS_ITEMS = [
+  ['Art 4-sterren kettingslot', 69],
+  ['Luxe kussenset', 125],
+  ['Luxe regenhuif', 299],
+  ['Luxe bakfietshoes voor de winter', 100],
+  ['Accu-upgrade naar 620 Wh', 199],
+]; // winkelwaarde incl. btw, samen € 792
+
+const MODELS = [
+  {
+    id: 'royal-3w', name: 'Royal Cargo Bike 3W Premium Plus', meta: 'Driewieler · tot 4 kinderen · middenmotor',
+    advies: 4544.63, lease: 3511.57, plus: 396.00,
+    colors: [
+      { id: 'groen', name: 'Groen', hex: '#5f6d4b', img: 'img/r3-groen.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/royal-cargo-bike/royal-3w-premium-plus-groen' },
+      { id: 'antraciet', name: 'Antraciet', hex: '#3b3e41', img: 'img/r3-antraciet.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/royal-cargo-bike/royal-3w-premium-plus-antraciet' },
+      { id: 'taupe', name: 'Taupe grijs', hex: '#a49f94', img: 'img/r3-taupe.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/met-3-wielen/royal-cargo-bike-3w-premium-plus-taupe-grijs-elektrische-bakfiets' },
+    ],
+    door: null, // geen Dog-uitvoering: het deurtje is hier een losse optie
+    options: [
+      { id: 'deurtje', name: 'Front deurtje', note: 'Vervangt het voorbankje. Plek voor 2 kinderen en meer ruimte voor boodschappen of de hond', price: 164.46 },
+      { id: 'babyschaal', name: 'Babyschaal Melia', note: 'Voor de allerkleinsten, vanaf de geboorte', price: 48.76 },
+      { id: 'peuterstoel', name: 'Peuterstoel Melia', note: 'Extra steun voor peuters', price: 48.76 },
+      { id: 'maxicosi', name: 'Maxi-Cosi adapter (Mini Mee)', note: 'Zet je eigen autostoeltje in de bak', price: 131.40 },
+      { id: 'gps', name: 'GPS-beveiliging It’s My Bike', note: 'Alarm, live volgen en hulp bij diefstal. 5 jaar sim en montage inbegrepen', price: 206.61 },
+    ],
+  },
+  {
+    id: 'royal-2w', name: 'Royal Cargo Bike 2W Premium Plus', meta: 'Tweewieler · wendbaar en snel · middenmotor',
+    advies: 4544.63, lease: 3511.57, plus: 396.00,
+    colors: [
+      { id: 'groen', name: 'Groen', hex: '#5f6d4b', img: 'img/r2-groen.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/2-wielen/royal-2w-premium-plus-groen' },
+      { id: 'taupe', name: 'Taupe grijs', hex: '#a49f94', img: 'img/r2-taupe.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/2-wielen/royal-2w-premium-plus-taupegrijs' },
+    ],
+    door: null, // geen Dog-uitvoering: het deurtje is hier een losse optie
+    options: [
+      { id: 'deurtje', name: 'Front deurtje', note: 'Vervangt het voorbankje. Plek voor 2 kinderen en meer ruimte voor boodschappen of de hond', price: 123.14 },
+      { id: 'babyschaal', name: 'Babyschaal Melia', note: 'Voor de allerkleinsten, vanaf de geboorte', price: 48.76 },
+      { id: 'peuterstoel', name: 'Peuterstoel Melia', note: 'Extra steun voor peuters', price: 48.76 },
+      { id: 'maxicosi', name: 'Maxi-Cosi adapter (Mini Mee)', note: 'Zet je eigen autostoeltje in de bak', price: 131.40 },
+      { id: 'gps', name: 'GPS-beveiliging It’s My Bike', note: 'Alarm, live volgen en hulp bij diefstal. 5 jaar sim en montage inbegrepen', price: 199.00 },
+    ],
+  },
+  {
+    id: 'vanrixtel', name: 'Van Rixtel Family & Dog', meta: 'Driewieler · zeer populair · onderhoudsarm',
+    advies: 3511.57, lease: 2478.51, plus: 309.92,
+    colors: [
+      { id: 'olive', name: 'Olive green', hex: '#6c704f', img: 'img/vf-olive.jpg', dogImg: 'img/vd-olive.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/met-3-wielen/van-rixtel-family-olive-green', dogUrl: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/bakfiets-voor-honden/van-rixtel-dog-olive-green' },
+      { id: 'sand', name: 'Desert sand', hex: '#c8b897', img: 'img/vf-sand.jpg', dogImg: 'img/vd-sand.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/met-3-wielen/van-rixtel-family-desert-sand', dogUrl: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/bakfiets-voor-honden/van-rixtel-Dog-desert-sand' },
+      { id: 'graphite', name: 'Graphite', hex: '#4b4d50', img: 'img/vf-graphite.jpg', dogImg: 'img/vd-graphite.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/met-3-wielen/van-rixtel-family-graphite', dogUrl: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/bakfiets-voor-honden/van-rixtel-dog-graphite' },
+      { id: 'nardo', name: 'Nardo grey', hex: '#8f9295', img: 'img/vf-nardo.jpg', dogImg: 'img/vd-nardo.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/met-3-wielen/van-rixtel-family-nardo-grey', dogUrl: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/bakfiets-voor-honden/van-rixtel-dog-nardo-grey' },
+      { id: 'black', name: 'Midnight black', hex: '#1c1d1f', img: 'img/vf-black.jpg', dogImg: 'img/vd-black.jpg', url: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/met-3-wielen/van-rixtel-family-midnight-black', dogUrl: 'https://www.fietsoptimaal.nl/elektrische-bakfietsen/bakfiets-voor-honden/van-rixtel-dog-midnight-black' },
+    ],
+    versions: true, // alleen Van Rixtel heeft een Family- en Dog-uitvoering
+    door: 0, // deurtje zit bij Van Rixtel in het pakket
+    options: [
+      { id: 'tracker', name: 'GPS-tracker', note: 'Zie waar je fiets staat via de app', price: 35.00 },
+    ],
+  },
+];
+
+const VERSIONS = [
+  { id: 'family', name: 'Family', text: 'Twee bankjes met gordels. Plek voor maximaal 4 kinderen.' },
+  { id: 'dog', name: 'Dog', text: 'Met deurtje voorin in plaats van het voorbankje. Ruimte voor je hond, 2 kinderen of boodschappen.' },
+];
+const TERMS = [
+  { id: 36, name: '36 maanden', text: '3 jaar' },
+  { id: 48, name: '48 maanden', text: '4 jaar' },
+];
+const VIA = [
+  { id: 'prive', name: 'Privé' },
+  { id: 'zakelijk', name: 'Zakelijk (zzp, vof, bv)' },
+];
+
+/* ------------------------------------------------------------------ */
+const inc = (n) => Math.round(n * BTW * 100) / 100;
+const eur = (n) => '€ ' + n.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+const state = { model: 'royal-3w', version: 'family', color: 'groen', plus: true, options: new Set(), term: 48, via: 'prive' };
+const model = () => MODELS.find((m) => m.id === state.model);
+const color = () => model().colors.find((c) => c.id === state.color) ?? model().colors[0];
+const photo = (c = color()) => (state.version === 'dog' && c.dogImg) || c.img;
+
+function lines() {
+  const m = model();
+  const out = [[m.versions ? `Fiets (${state.version === 'dog' ? 'Dog' : 'Family'})` : 'Fiets', inc(m.lease)]];
+  if (state.version === 'dog') out.push([m.door ? 'Deurtje voorin' : 'Deurtje voorin (inbegrepen)', inc(m.door)]);
+  if (state.plus) out.push(['Pluspakket (50% korting)', inc(m.plus)]);
+  m.options.filter((o) => state.options.has(o.id)).forEach((o) => out.push([o.name, inc(o.price)]));
+  return out;
+}
+const total = () => Math.round(lines().reduce((s, [, p]) => s + p, 0) * 100) / 100;
+/** Huurprijs p/m incl. btw uit de staffel: eerste staffel waarvan de inkoopprijs >= het bedrag. null = boven de staffel. */
+function staffel(amount, term) {
+  const col = term === 36 ? 1 : 2;
+  const row = STAFFEL.find((r) => r[0] >= amount - 0.005 && r[col] != null);
+  return row ? row[col] : null;
+}
+const monthly = (term = state.term) => staffel(total(), term);
+/** Wat een extra (incl. btw) bij de huidige samenstelling aan de maandprijs toevoegt. */
+function addsPerMonth(priceIncl, selected) {
+  const t = total();
+  const without = staffel(selected ? t - priceIncl : t, state.term);
+  const withIt = staffel(selected ? t : t + priceIncl, state.term);
+  return without == null || withIt == null ? null : Math.round((withIt - without) * 100) / 100;
+}
+const pmLabel = (d) => d == null ? 'op aanvraag' : d === 0 ? 'geen meerprijs' : `+ ${eur(d)} p/m`;
+/** Werk de "+ € … p/m" bij alle extra's bij zonder de vinkjes opnieuw op te bouwen (focus blijft staan). */
+function updateDeltas() {
+  document.querySelectorAll('[data-incl]').forEach((el) => {
+    const input = $(el.dataset.for);
+    el.textContent = pmLabel(addsPerMonth(+el.dataset.incl, input.checked));
+  });
+}
+
+function radio(el, checked) { el.setAttribute('role', 'radio'); el.setAttribute('aria-checked', String(checked)); el.tabIndex = checked ? 0 : -1; }
+function radioKeys(group) {
+  group.addEventListener('keydown', (e) => {
+    if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(e.key)) return;
+    const items = [...group.querySelectorAll('[role="radio"]')];
+    const i = items.indexOf(document.activeElement);
+    if (i < 0) return;
+    e.preventDefault();
+    const j = (i + (e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length;
+    items[j].click();
+    group.querySelectorAll('[role="radio"]')[j]?.focus(); // knoppen worden opnieuw opgebouwd na een klik
+  });
+}
+
+function renderModels() {
+  const g = $('models'); g.innerHTML = '';
+  MODELS.forEach((m) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'model';
+    radio(b, m.id === state.model);
+    b.innerHTML = `${m.tag ? `<span class="tag">${esc(m.tag)}</span>` : ''}
+      <div class="model-photo"><img src="${m.colors[0].img}" alt="${esc(m.name)}" loading="lazy"></div>
+      <div class="model-body"><span class="model-name">${esc(m.name)}</span><span class="model-meta">${esc(m.meta)}</span>
+      <span class="model-price num"><strong>${eur(staffel(inc(m.lease), 48))}</strong><span class="model-meta">per maand bij 48 maanden</span></span></div>`;
+    b.onclick = () => { if (state.model === m.id) return; state.model = m.id; state.color = m.colors[0].id; state.options.clear(); if (!m.versions) state.version = 'family'; render(); };
+    g.append(b);
+  });
+}
+function renderVersions() {
+  const g = $('versions'); g.innerHTML = '';
+  const m = model();
+  $('step-version').hidden = !m.versions;
+  // Stapnummers doorlopend houden als de Family/Dog-stap verborgen is
+  let n = 0;
+  document.querySelectorAll('.step').forEach((s) => { if (!s.hidden) s.querySelector('.step-no').textContent = ++n; });
+  if (!m.versions) return;
+  VERSIONS.forEach((v) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'version';
+    radio(b, v.id === state.version);
+    const extra = v.id === 'dog' ? (m.door ? ` + ${eur(inc(m.door))}` : ' · deurtje inbegrepen') : '';
+    b.innerHTML = `<span class="radio" aria-hidden="true"></span><b>${v.name}<span class="num" style="font-family:var(--font-sans);font-weight:500;font-size:.8125rem;color:var(--muted)">${extra}</span></b><span>${esc(v.text)}</span>`;
+    b.onclick = () => { state.version = v.id; render(); };
+    g.append(b);
+  });
+}
+function renderColors() {
+  const g = $('colors'); g.innerHTML = '';
+  model().colors.forEach((c) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'color';
+    radio(b, c.id === color().id);
+    b.innerHTML = `<span class="swatch" style="background:${c.hex}" aria-hidden="true"></span>${esc(c.name)}`;
+    b.onclick = () => { state.color = c.id; render(); };
+    g.append(b);
+  });
+  const c = color();
+  $('preview-img').src = photo(c);
+  $('preview-img').alt = `${model().name} in ${c.name}`;
+}
+function renderPlus() {
+  const m = model();
+  const retail = PLUS_ITEMS.reduce((s, [, p]) => s + p, 0);
+  $('plus').innerHTML = `
+    <div class="plus-top">
+      <div><h3>Pluspakket leasedeal <span class="badge">50% korting</span></h3><p class="note" style="margin-top:4px">Alles wat je nodig hebt om meteen comfortabel op pad te gaan.</p></div>
+      <div class="plus-price num"><s>Normaal ${eur(retail)}</s><strong>Nu 50% korting</strong></div>
+    </div>
+    <ul class="num">${PLUS_ITEMS.map(([n, p]) => `<li><span>${esc(n)}</span><span>t.w.v. ${eur(p)}</span></li>`).join('')}</ul>
+    <label class="check"><input type="checkbox" id="plus-on" ${state.plus ? 'checked' : ''}><span><b>Pluspakket toevoegen</b><small>Aanbevolen. Alleen bij deze leasedeal.</small></span><span class="price num" data-incl="${inc(m.plus)}" data-for="plus-on"></span></label>`;
+  $('plus-on').onchange = (e) => { state.plus = e.target.checked; renderSummary(); };
+}
+function renderOptions() {
+  const g = $('options'); g.innerHTML = '';
+  const m = model();
+  if (state.version === 'dog') {
+    const d = document.createElement('label'); d.className = 'check';
+    d.innerHTML = `<input type="checkbox" checked disabled><span><b>Deurtje voorin</b><small>Hoort bij de Dog-uitvoering. Het voorbankje vervalt.</small></span><span class="price num ${m.door ? '' : 'incl'}">Inbegrepen</span>`;
+    g.append(d);
+  }
+  m.options.forEach((o) => {
+    const l = document.createElement('label'); l.className = 'check';
+    l.innerHTML = `<input type="checkbox" id="opt-${o.id}" ${state.options.has(o.id) ? 'checked' : ''}><span><b>${esc(o.name)}</b><small>${esc(o.note)}</small></span><span class="price num" data-incl="${inc(o.price)}" data-for="opt-${o.id}"></span>`;
+    l.querySelector('input').onchange = (e) => { e.target.checked ? state.options.add(o.id) : state.options.delete(o.id); renderSummary(); };
+    g.append(l);
+  });
+}
+function renderTerms() {
+  const g = $('terms'); g.innerHTML = '';
+  TERMS.forEach((t) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'term';
+    radio(b, t.id === state.term);
+    const pm = monthly(t.id);
+    b.innerHTML = `<b>${t.name}</b><span class="num">${pm == null ? 'Op aanvraag' : eur(pm) + ' p/m'} · ${t.text}</span>`;
+    b.onclick = () => { state.term = t.id; renderSummary(); };
+    g.append(b);
+  });
+}
+function renderVia() {
+  const g = $('via'); g.innerHTML = '';
+  VIA.forEach((v) => {
+    const b = document.createElement('button'); b.type = 'button';
+    radio(b, v.id === state.via);
+    b.textContent = v.name;
+    b.onclick = () => { state.via = v.id; renderVia(); };
+    g.append(b);
+  });
+  $('biz').hidden = state.via !== 'zakelijk';
+}
+function renderSummary() {
+  renderTerms();
+  const m = model(), c = color();
+  $('sum-img').src = photo(c); $('sum-img').alt = '';
+  $('sum-name').textContent = m.name;
+  $('sum-variant').textContent = `${m.versions ? (state.version === 'dog' ? 'Dog · ' : 'Family · ') : ''}${c.name} · ${state.term} maanden`;
+  const extras = lines().slice(1).map(([n]) => n.replace(' (inbegrepen)', '').replace(' (50% korting)', ''));
+  const included = [...extras, 'Verzekering tegen schade en diefstal', 'Onderhoud en reparaties', '24/7 pechhulp in heel Europa', 'Verlengde accugarantie'];
+  $('sum-lines').innerHTML = included.map((n) => `<div><dt>${esc(n)}</dt></div>`).join('');
+  updateDeltas();
+  const pm = monthly();
+  $('sum-monthly').className = 'monthly' + (pm == null ? ' pending' : '');
+  $('sum-monthly').innerHTML = `<small>Leaseprijs per maand</small><strong class="num">${pm == null ? 'Op aanvraag' : eur(pm)} ${pm == null ? '' : '<span>p/m</span>'}</strong><em>${state.term} maanden, incl. btw</em>`;
+  $('mbar-total').textContent = pm == null ? 'Op aanvraag' : `${eur(pm)} p/m`;
+  $('form-price').innerHTML = `<span>Jouw leaseprijs · ${state.term} maanden, incl. btw</span><strong class="num">${pm == null ? 'Op aanvraag' : eur(pm) + ' p/m'}</strong>`;
+}
+function render() { renderModels(); renderVersions(); renderColors(); renderPlus(); renderOptions(); renderSummary(); }
+
+/* Formulier */
+const RULES = {
+  initials: (v) => /^([a-z]\.?\s?){1,6}$/i.test(v) ? '' : 'Vul je voorletters in, bijvoorbeeld J.A.',
+  lastName: (v) => v ? '' : 'Vul je achternaam in.',
+  email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? '' : 'Vul een geldig e-mailadres in, bijvoorbeeld naam@voorbeeld.nl.',
+  phone: (v) => v.replace(/[^\d+]/g, '').length >= 10 ? '' : 'Vul een telefoonnummer van 10 cijfers in.',
+  postalCode: (v) => /^[1-9]\d{3}\s?[a-z]{2}$/i.test(v) ? '' : 'Vul een postcode in zoals 1234 AB.',
+  houseNumber: (v) => /^\d+$/.test(v) ? '' : 'Vul je huisnummer in, alleen cijfers. Een letter of toevoeging kan in het veld ernaast.',
+  street: (v) => v ? '' : 'Vul je straat in.',
+  city: (v) => v ? '' : 'Vul je woonplaats in.',
+  birthDate: (v) => {
+    const m = v.match(/^(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{4})$/);
+    if (!m) return 'Vul je geboortedatum in als dd-mm-jjjj.';
+    const d = new Date(+m[3], +m[2] - 1, +m[1]);
+    if (d.getDate() !== +m[1] || d.getMonth() !== +m[2] - 1) return 'Deze datum bestaat niet.';
+    const adult = new Date(d); adult.setFullYear(d.getFullYear() + 18);
+    return adult <= new Date() ? '' : 'Je moet 18 jaar of ouder zijn om te leasen.';
+  },
+};
+/** IBAN-controle met het mod-97-getal, zodat typefouten direct opvallen. */
+function validIban(v) {
+  const s = v.replace(/\s+/g, '').toUpperCase();
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(s) || (s.startsWith('NL') && s.length !== 18)) return false;
+  const digits = (s.slice(4) + s.slice(0, 4)).replace(/[A-Z]/g, (c) => c.charCodeAt(0) - 55);
+  let r = 0; for (const d of digits) r = (r * 10 + +d) % 97;
+  return r === 1;
+}
+const BIZ_RULES = {
+  company: (v) => v ? '' : 'Vul de bedrijfsnaam in.',
+  kvk: (v) => /^\d{8}$/.test(v) ? '' : 'Een KVK-nummer heeft 8 cijfers.',
+  vat: (v) => /^NL\d{9}B\d{2}$/i.test(v.replace(/[\s.]/g, '')) ? '' : 'Vul het btw-nummer in zoals NL123456789B01.',
+  signatory: (v) => v ? '' : 'Vul de naam van de tekeningsbevoegde in.',
+  iban: (v) => validIban(v) ? '' : 'Dit IBAN klopt niet. Controleer het nummer.',
+};
+function validate() {
+  let first = null;
+  const rules = state.via === 'zakelijk' ? { ...RULES, ...BIZ_RULES } : RULES;
+  for (const f of document.querySelectorAll('#biz .field')) { f.classList.remove('invalid'); f.querySelector('.err').textContent = ''; }
+  for (const [id, rule] of Object.entries(rules)) {
+    const msg = rule($(id).value.trim());
+    const f = document.querySelector(`[data-f="${id}"]`);
+    f.classList.toggle('invalid', !!msg); f.querySelector('.err').textContent = msg;
+    $(id).setAttribute('aria-invalid', String(!!msg));
+    if (msg && !first) first = $(id);
+  }
+  const cf = document.querySelector('[data-f="consent"]');
+  const cmsg = $('consent').checked ? '' : 'Geef toestemming om je aanvraag te kunnen verwerken.';
+  cf.querySelector('.err').textContent = cmsg;
+  if (cmsg && !first) first = $('consent');
+  return first;
+}
+
+function buildPayload() {
+  const m = model(), c = color();
+  return {
+    partner: PARTNER,
+    idempotencyKey: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    bike: { model: m.id, name: m.name, version: state.version, color: c.id, colorName: c.name },
+    plusPackage: state.plus,
+    options: [...state.options],
+    termMonths: state.term,
+    lines: lines().map(([label, priceInclVat]) => ({ label, priceInclVat })),
+    totalInclVat: total(),
+    totalExVat: Math.round(total() / BTW * 100) / 100,
+    monthlyInclVat: monthly(),
+    customer: {
+      leaseVia: state.via,
+      initials: $('initials').value.trim().toUpperCase(), lastName: $('lastName').value.trim(), birthDate: $('birthDate').value.trim(),
+      street: $('street').value.trim(), addition: $('addition').value.trim(), city: $('city').value.trim(),
+      email: $('email').value.trim().toLowerCase(), phone: $('phone').value.trim(),
+      postalCode: $('postalCode').value.trim().toUpperCase().replace(/\s+/g, ' '), houseNumber: $('houseNumber').value.trim(),
+      remarks: $('remarks').value.trim(),
+    },
+    business: state.via !== 'zakelijk' ? null : {
+      company: $('company').value.trim(), kvk: $('kvk').value.trim(), vatNumber: $('vat').value.replace(/[\s.]/g, '').toUpperCase(),
+      signatory: $('signatory').value.trim(), iban: $('iban').value.replace(/\s+/g, '').toUpperCase(),
+    },
+    website: $('website').value, // honeypot
+  };
+}
+
+$('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const bad = validate();
+  if (bad) { bad.focus(); return; }
+  const btn = $('submit'); btn.disabled = true; btn.textContent = 'Bezig met versturen…';
+  const payload = buildPayload();
+  // Prototype: hier komt straks  await fetch('/api/partner-aanvragen', { method: 'POST', body: JSON.stringify(payload) })
+  console.log('Leaseaanvraag', payload);
+  await new Promise((r) => setTimeout(r, 700));
+  const ref = 'FO-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+  showDone(ref, payload);
+});
+
+function showDone(ref, p) {
+  $('configurator').hidden = true; $('mbar').hidden = true;
+  document.querySelector('.intro').hidden = true;
+  const d = $('done'); d.hidden = false;
+  d.innerHTML = `<div class="done">
+    <h1>Bedankt! <em>Je aanvraag is binnen.</em></h1>
+    <p>Je referentie is <span class="ref num">${ref}</span>. Je ontvangt een bevestiging op ${esc(p.customer.email)}.</p>
+    <p><b>${esc(p.bike.name)}</b> · ${model().versions ? (p.bike.version === 'dog' ? 'Dog · ' : 'Family · ') : ''}${esc(p.bike.colorName)} · ${p.termMonths} maanden · <span class="num">${p.monthlyInclVat == null ? 'maandprijs op aanvraag' : eur(p.monthlyInclVat) + ' p/m incl. btw'}</span></p>
+    <div><h2 style="margin-bottom:8px">Zo gaat het verder</h2>
+    <ol><li>We bekijken je aanvraag. Binnen 48 uur is alles geregeld.</li>
+    <li>Je ontvangt het leasecontract. Pas als je het digitaal tekent, is het definitief.</li>
+    <li>Fietsoptimaal maakt je bakfiets rijklaar en spreekt de levering met je af.</li></ol></div>
+    <div><button class="btn ghost" type="button" id="again">Nog een bakfiets aanvragen</button></div></div>`;
+  $('again').onclick = () => location.reload();
+  d.scrollIntoView({ block: 'start' }); // scrollt in een iframe ook de pagina van de partner mee
+}
+
+/* Iframe: geef de hoogte door aan de partnerpagina, zodat er geen scrollbalk in het frame komt. */
+const framed = window.parent !== window;
+if (framed) document.documentElement.classList.add('framed');
+if (framed && 'ResizeObserver' in window) {
+  // Hoogte van de inhoud zelf (niet van het frame), zodat het frame ook weer kleiner kan worden
+  const send = () => window.parent.postMessage({ type: 'lease-form:height', height: Math.ceil(document.body.getBoundingClientRect().height) }, '*');
+  new ResizeObserver(send).observe(document.body);
+  send();
+}
+/* Interne links (#gegevens, #uitleg) via scrollIntoView: dat scrollt in een iframe ook de partnerpagina mee. */
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  const target = a && document.getElementById(a.getAttribute('href').slice(1));
+  if (!target) return;
+  e.preventDefault();
+  target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+});
+
+radioKeys($('models')); radioKeys($('versions')); radioKeys($('colors')); radioKeys($('terms')); radioKeys($('via'));
+$('usp-from').textContent = `Lease vanaf ${eur(Math.min(...MODELS.map((m) => staffel(inc(m.lease), 48))))} per maand`;
+renderVia(); render();
+</script>
+
+</body>
+</html>
