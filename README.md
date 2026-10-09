@@ -48,5 +48,5 @@ Plak dit op de pagina waar het formulier moet komen. In WordPress: blok **Aangep
 
 ## Nog te doen
 
-- Versturen koppelen aan de backend (nu wordt de aanvraag alleen in de console gelogd, zie `buildPayload()`).
+- Aanvragen gaan naar een Google Sheet via Apps Script: zie [apps-script/README.md](apps-script/README.md). Zolang `SUBMIT_URL` in `index.html` leeg is, staat het formulier in demomodus.
 - Subdomein inrichten en daar alleen framing door de site van de partner toestaan (`Content-Security-Policy: frame-ancestors https://www.fietsoptimaal.nl`).

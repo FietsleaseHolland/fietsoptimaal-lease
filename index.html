@@ -347,6 +347,7 @@ html.framed .wrap { padding-block-end: 32px; }
           </div>
           <div class="field full form-price" id="form-price"></div>
           <div class="field full" style="gap:14px"><button class="btn" type="submit" id="submit">Aanvragen</button>
+            <p class="err" id="submit-err" role="alert"></p>
             <p class="note"><b style="color:var(--ink)">Je aanvraag is gratis en vrijblijvend.</b> Je zit pas ergens aan vast als je zelf het leasecontract tekent.</p>
             <ul class="usp-under">
               <li>Verzekering tegen schade en diefstal</li>
@@ -418,6 +419,8 @@ html.framed .wrap { padding-block-end: 32px; }
  * Op de pagina tonen we ze incl. btw (x 1,21). Pas hier prijzen, kleuren en opties aan.
  * ------------------------------------------------------------------ */
 const PARTNER = 'fietsoptimaal';
+/* Web-app-URL van het Google Apps Script (zie apps-script/README.md). Leeg = demomodus: er wordt niets verstuurd. */
+const SUBMIT_URL = '';
 const BTW = 1.21;
 
 /* Leaseprijs per maand (incl. btw): totaalprijs incl. btw afgerond naar de eerstvolgende staffel. */
@@ -868,11 +871,13 @@ function validate() {
   return first;
 }
 
+// Eén sleutel per aanvraag: als de klant na een netwerkfout opnieuw klikt, komt er geen dubbele regel in de sheet.
+const IDEMPOTENCY_KEY = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2);
 function buildPayload() {
   const m = model(), c = color();
   return {
     partner: PARTNER,
-    idempotencyKey: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    idempotencyKey: IDEMPOTENCY_KEY,
     bike: { model: m.id, name: m.name, version: state.version, color: c.id, colorName: c.name },
     plusPackage: state.plus,
     options: [...state.options],
@@ -902,12 +907,29 @@ $('form').addEventListener('submit', async (e) => {
   const bad = validate();
   if (bad) { scrollToEl(bad.closest('.field') || bad); bad.focus({ preventScroll: true }); return; }
   const btn = $('submit'); btn.disabled = true; btn.textContent = 'Bezig met versturen…';
+  $('submit-err').textContent = '';
   const payload = buildPayload();
-  // Prototype: hier komt straks  await fetch('/api/partner-aanvragen', { method: 'POST', body: JSON.stringify(payload) })
-  console.log('Leaseaanvraag', payload);
-  await new Promise((r) => setTimeout(r, 700));
-  const ref = 'FO-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-  showDone(ref, payload);
+  try {
+    let ref;
+    if (!SUBMIT_URL) { // demomodus
+      console.log('Leaseaanvraag (demo, niet verstuurd)', payload);
+      await new Promise((r) => setTimeout(r, 600));
+      ref = 'DEMO-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+    } else {
+      // text/plain voorkomt een CORS-preflight; Apps Script leest de JSON uit de body
+      const res = await fetch(SUBMIT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.message || 'Onbekende fout');
+      ref = data.reference;
+    }
+    showDone(ref, payload);
+  } catch (err) {
+    console.error(err);
+    $('submit-err').textContent = err.message && err.message !== 'Failed to fetch' && err.message.length < 140
+      ? err.message
+      : 'Je aanvraag kon niet worden verstuurd. Controleer je internetverbinding en probeer het opnieuw.';
+    btn.disabled = false; btn.textContent = 'Aanvragen';
+  }
 });
 
 function showDone(ref, p) {
