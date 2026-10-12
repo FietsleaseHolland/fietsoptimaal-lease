@@ -13,10 +13,10 @@
 var SHEET_NAME = 'Aanvragen';
 var COLUMNS = [
   'Ontvangen', 'Referentie', 'Status', 'Bron', 'Priv\u00e9/zakelijk',
-  'Voorletters', 'Achternaam', 'Geboortedatum', 'E-mail', 'Telefoon',
+  'Voorletters', 'Tussenvoegsel', 'Achternaam', 'Geboortedatum', 'E-mail', 'Telefoon',
   'Straat', 'Huisnummer', 'Toevoeging', 'Postcode', 'Plaats',
   'Bedrijfsnaam', 'KVK-nummer', 'Btw-nummer', 'Tekeningsbevoegde', 'IBAN',
-  'Model', 'Uitvoering', 'Kleur', 'Pluspakket', 'Opties',
+  'Merk', 'Model', 'Uitvoering', 'Kleur', 'Pluspakket', 'Opties',
   'Looptijd (mnd)', 'Maandprijs incl. btw', 'Totaalprijs incl. btw', 'Opmerkingen', 'Idempotency-key',
 ];
 
@@ -32,7 +32,7 @@ function doPost(e) {
 
 /** Handig om te testen: open de web-app-URL in je browser. */
 function doGet() {
-  return json({ ok: true, service: 'bakfiets-lease-aanvragen', versie: '2026-10-09-salesmail' });
+  return json({ ok: true, service: 'bakfiets-lease-aanvragen', versie: '2026-10-12-losse-kolommen' });
 }
 
 function handle(d) {
@@ -75,10 +75,10 @@ function handle(d) {
     var sheet = getSheet();
     var row = [
       new Date(), reference, 'Nieuw', d.partner || '', c.leaseVia === 'zakelijk' ? 'Zakelijk' : 'Priv\u00e9',
-      c.initials, c.lastName, c.birthDate, c.email, c.phone,
+      c.initials, splitName(c.lastName).prefix, splitName(c.lastName).last, c.birthDate, c.email, c.phone,
       c.street, c.houseNumber, c.addition, c.postalCode, c.city,
       b ? b.company : '', b ? b.kvk : '', b ? b.vatNumber : '', b ? b.signatory : '', b ? b.iban : '',
-      bike.name, bike.version === 'dog' ? 'Dog' : (bike.model === 'vanrixtel' ? 'Family' : ''), bike.colorName,
+      splitBike(bike.name).brand, splitBike(bike.name).model, bike.version === 'dog' ? 'Dog' : (bike.model === 'vanrixtel' ? 'Family' : ''), bike.colorName,
       d.plusPackage ? 'Ja' : 'Nee', optionNames(d, false), d.termMonths, d.monthlyInclVat, d.totalInclVat, c.remarks, key,
     ].map(function (v, i) { return i === 0 ? v : cell(v); });
     sheet.appendRow(row);
@@ -93,6 +93,27 @@ function handle(d) {
   try { sendConfirmation(reference, d); } catch (err) { console.error('Bevestiging mislukt', err); }
   try { sendNotification(reference, d); } catch (err) { console.error('Melding mislukt', err); }
   return { ok: true, reference: reference };
+}
+
+/** Tussenvoegsels die vooraan een achternaam kunnen staan ("van der Berg" -> "van der" + "Berg"). */
+var PREFIXES = ['van', 'de', 'der', 'den', 'het', "'t", 'ter', 'ten', 'te', 'in', 'op', 'aan', 'bij', 'uit', 'voor', 'tot', 'onder', 'over',
+  'la', 'le', 'les', 'du', 'des', 'di', 'da', 'del', 'della', 'dos', 'el', 'von', 'zu', 'vande', 'vanden', 'vander', "d'", "l'"];
+function splitName(full) {
+  var words = String(full || '').trim().split(/\s+/);
+  var prefix = [];
+  // Altijd minstens een woord als achternaam overhouden
+  while (words.length > 1 && PREFIXES.indexOf(words[0].toLowerCase()) > -1) prefix.push(words.shift());
+  return { prefix: prefix.join(' ').toLowerCase(), last: words.join(' ') };
+}
+
+/** Merk en model los: "Royal Cargo Bike 3W Premium Plus" -> "Royal Cargo Bike" + "3W Premium Plus". */
+var BRANDS = ['Royal Cargo Bike', 'Van Rixtel'];
+function splitBike(name) {
+  name = String(name || '');
+  for (var i = 0; i < BRANDS.length; i++) {
+    if (name.indexOf(BRANDS[i]) === 0) return { brand: BRANDS[i], model: name.slice(BRANDS[i].length).trim() };
+  }
+  return { brand: '', model: name };
 }
 
 function getSheet() {
