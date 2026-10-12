@@ -275,7 +275,7 @@ html.framed .wrap { padding-block-end: 32px; }
 .how b, .incl b { color: var(--ink); font-weight: 600; }
 .how span, .incl span { font-size: .875rem; color: var(--muted); }
 .incl { display: grid; gap: 10px 24px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 0; padding: 0; list-style: none; }
-.incl li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
+.incl li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-content: start; }
 .incl li::before { content: "✓"; grid-row: span 2; color: var(--green-ink); font-weight: 700; }
 .faq { display: grid; gap: 8px; }
 .faq details { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 16px; }
@@ -344,7 +344,6 @@ html.framed .wrap { padding-block-end: 32px; }
         <div class="step-head"><span class="step-no">4</span><h2 id="s4">Pakket en extra’s</h2></div>
         <div class="plus" id="plus"></div>
         <div class="options" id="options"></div>
-        <div class="options"><label class="check"><input type="checkbox" checked disabled><span><b>GPS-tracker</b><small>Zit standaard op elke bakfiets. Je ziet altijd waar je fiets staat.</small></span><span class="price num incl">Inbegrepen</span></label></div>
       </section>
 
       <section class="step" aria-labelledby="s5">
@@ -401,7 +400,6 @@ html.framed .wrap { padding-block-end: 32px; }
               <li>Onderhoud en reparaties</li>
               <li>24/7 pechhulp in heel Europa</li>
               <li>Verlengde accugarantie</li>
-              <li>GPS-tracker</li>
               <li>Binnen 48 uur geregeld</li>
             </ul>
             <a class="tp" href="https://nl.trustpilot.com/review/fietsleaseholland.nl" target="_blank" rel="noopener"><span class="tp-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="half"></i></span><span><b>4,6</b> uit 5 op Trustpilot · Fietslease Holland</span></a></div>
@@ -440,7 +438,6 @@ html.framed .wrap { padding-block-end: 32px; }
         <li><b>Onderhoud en reparaties</b><span>Je bakfiets blijft het hele contract in topconditie.</span></li>
         <li><b>24/7 pechhulp</b><span>In heel Europa, dag en nacht.</span></li>
         <li><b>Verlengde accugarantie</b><span>Geen zorgen over een dure nieuwe accu.</span></li>
-        <li><b>GPS-tracker</b><span>Standaard op elke bakfiets, zodat je altijd weet waar hij staat.</span></li>
         <li><b>Geen BKR en geen opstartkosten</b><span>Je betaalt alleen het vaste maandbedrag.</span></li>
       </ul>
     </div>
@@ -859,7 +856,7 @@ function renderSummary() {
   $('sum-name').textContent = m.name;
   $('sum-variant').textContent = `${m.versions ? (state.version === 'dog' ? 'Dog · ' : 'Family · ') : ''}${c.name} · ${state.term} maanden`;
   const extras = lines().slice(1).map(([n]) => n.replace(' (inbegrepen)', '').replace(' (50% korting)', ''));
-  const included = [...extras, 'Verzekering tegen schade en diefstal', 'Onderhoud en reparaties', '24/7 pechhulp in heel Europa', 'Verlengde accugarantie', 'GPS-tracker'];
+  const included = [...extras, 'Verzekering tegen schade en diefstal', 'Onderhoud en reparaties', '24/7 pechhulp in heel Europa', 'Verlengde accugarantie'];
   $('sum-lines').innerHTML = included.map((n) => `<div><dt>${esc(n)}</dt></div>`).join('');
   updateDeltas();
 
